@@ -5,7 +5,7 @@ import pandas as pd
 from custom_progress import printProgressBar
 from utils import time_format
 from time import time, sleep
-from config import data_path
+from code_config import data_path
 import xlwings as xw
 
 def get_krx_etf_ticker(date):
@@ -116,7 +116,8 @@ def save_krx_etf_trade_history(wb = None,
     print(f'elapsed time: {time_format(ed-st)}')
     print(f'please enter to exit')
     x = input()
-    
+
+
 if __name__ == "__main__":
-    xw.Book('C:\\Users\\junbe\\Dropbox\\02. Projects\\01. WebCralwer\\Crawler.xlsm').set_mock_caller()
-    save_krx_etf_trade_history()    
+    xw.Book('D:/Projects/marketdata/Crawler.xlsm').set_mock_caller()
+    tickers = get_krx_etf_ticker('20240405')

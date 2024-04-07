@@ -1,4 +1,5 @@
 import sys, json, requests
+import xlwings as xw
 
 session = requests.Session()
 # SSL 인증 처리 무효화
@@ -12,6 +13,6 @@ r = session.get(api_url, params = params, headers = headers)
 msg, results = r.json().values()
 
 if __name__ == "__main__":
-    xw.Book('C:\\Users\\junbe\\Dropbox\\02. Projects\\01. WebCralwer\\Crawler.xlsm').set_mock_caller()
+    xw.Book('D:/Prodjcts/WebCrawler/Crawler.xlsm').set_mock_caller()
 
 

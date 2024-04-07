@@ -6,24 +6,26 @@ import json
 import pandas as pd
 import time
 import math
-import config
+import code_config
 
-def save_naver_finance_etf_info(tickers,
-                                prev_list_to_skip = [],
-                                use_prev_data = True,
-                                output_file_name = 'etf_base_info.csv'):
+def _save_naver_attached_data(base_info,
+                              prev_list_to_skip = [],
+                              use_prev_data = True,
+                              output_file_name = 'full_etf_info.csv'):
 
     write_type = 'a' if use_prev_data else 'w'
-    f = open(config.data_path+output_file_name, write_type, encoding = 'utf-8', newline = '')
+    f = open(code_config.data_path+output_file_name, write_type, encoding = 'utf-8', newline = '')
     wr = csv.writer(f)
 
     if not use_prev_data:
-        wr.writerow(['ticker', 'market cap', 'type', 'issue date', 'ter', 'issuer'])
+        wr.writerow(['code', 'market cap', 'type', 'issue date', 'ter', 'issuer', 'cu'])
     count = 0
 
-    #import pdb;pdb.set_trace()
     try:
-        for code in tickers:
+        for i, ser in base_info.iterrows():
+            code = ser['code']
+            cu = str(ser['creationunit'])
+            
             if code in prev_list_to_skip:
                 continue
 
@@ -33,7 +35,7 @@ def save_naver_finance_etf_info(tickers,
             each_url = f'https://finance.naver.com/item/main.nhn?code={url_code}'
             each_data = urllib.request.urlopen(each_url).read().decode('CP949')
             soup = BeautifulSoup(each_data)
-            
+
             if soup.body is None:
                 continue
 
@@ -58,7 +60,8 @@ def save_naver_finance_etf_info(tickers,
                 info2[1].get_text(),
                 info2[2].get_text(),
                 info3[0].get_text(),
-                info3[1].get_text()
+                info3[1].get_text(),
+                cu
             ]
             print(f'{count} : {" | ".join(info_all)}')
             wr.writerow(info_all)
