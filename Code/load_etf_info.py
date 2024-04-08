@@ -6,7 +6,7 @@ from datetime import datetime
 
 def load_etf_info(wb = None, 
                    sheet_name = 'BaseInfo',
-                   file_name = 'base_info.json',
+                   file_name = 'etf_base_info.json',
                    etf_info_file_name = 'full_etf_info.csv',
                    output_range = 'G3:H5000'):
     # -    
@@ -17,16 +17,22 @@ def load_etf_info(wb = None,
     info_df = pd.read_csv(code_config.data_path + etf_info_file_name)
     res = df.merge(info_df, on='code', how='left')
 
-    def notional_parser(z):
-        if not isinstance(z, str):
-            return z
-        elif bool(re.match('^[1-9].*원$', z)):
-            return int(re.sub('(조|억|원|,)', '', z) )
-        else:
-            return z
-    
-    res['market cap'] = res['market cap'].apply(notional_parser)
+    #def notional_parser(z):
+    #    if not isinstance(z, str):
+    #        return z
+    #    elif bool(re.match('^[1-9].*원$', z)):
+    #        return int(re.sub('(조|억|원|,)', '', z) )
+    #    else:
+    #        return z
+    #res['market cap'] = res['market cap'].apply(notional_parser)
 
+    res['cu'] = res['creationunit']
+    res.drop(columns=['market cap'], inplace=True)
+    res.rename(columns = {'net_asset': 'market cap'}, inplace = True)
+    res['market cap'] = res['market cap'].astype(float) / 100000000.0
+    res = res.sort_values(by='market cap', ascending=False)
+    res.drop(columns=['creationunit', 'listed_shares', 'nav', 'issuer'], inplace=True)
+    
     def ter_parser(z):
         if not isinstance(z, str):
             return z
@@ -49,19 +55,15 @@ def load_etf_info(wb = None,
             return z
     
     res['issue date'] = res['issue date'].apply(issue_date_parser)
-    
+
     ws = wb.sheets[sheet_name]
 
     ws.range(output_range).clear_contents()
 
     res.drop_duplicates('code', inplace=True)
-    res.sort_values(by='code', inplace=True, ascending=False)
+    #res.sort_values(by='code', inplace=True, ascending=False)
     res['code'] = res['code'].apply(lambda z: f'0{z}' if len(str(z)) == 5 else str(z))
-
-    # sort res by market cap
-    res = res.sort_values(by='market cap', ascending=False)
-    res['net_asset'] = res['net_asset'] / 100000000.0
-    res.drop(columns=['creationunit', 'listed_shares', 'nav', 'net_asset', 'issuer'], inplace=True)
+    
     ws.range(output_range).options(pd.DataFrame, index = False).value = res
 
 if __name__ == "__main__":

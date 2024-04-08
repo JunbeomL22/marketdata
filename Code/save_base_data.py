@@ -2,7 +2,7 @@ from code_config import data_path
 from time import time, sleep
 from krx_etf_info import get_krx_etf_ticker_history, get_krx_all_etf_cum_issue_history
 from naver_etf_info import _save_naver_attached_data
-from infomax_data import get_etf_info
+from infomax_base_data import get_etf_info
 import pandas as pd
 from pykrx import stock, bond
 from custom_progress import printProgressBar

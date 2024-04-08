@@ -7,7 +7,7 @@ from time import time
 import sys, json, requests
 from custom_progress import printProgressBar
 from utils import time_format
-from infomax_data import get_index_list, get_index_pdf
+from infomax_base_data import get_index_list, get_index_pdf
 import urllib3;urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def load_index_pdf(
