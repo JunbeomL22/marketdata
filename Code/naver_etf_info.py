@@ -66,7 +66,7 @@ def _save_naver_attached_data(base_info,
             print(f'{count} : {" | ".join(info_all)}')
             wr.writerow(info_all)
             count += 1
-            time.sleep(0.3)
+            time.sleep(0.2)
     except:
         print('Exception happend. The output file closed')
         f.close()

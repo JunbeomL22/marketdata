@@ -2,17 +2,17 @@ from code_config import data_path, INFOMAX_HEADER
 import sys, json, requests
 import pandas as pd
 
-def get_daily_nav(code,
-                  start_date = '',
-                  end_date = ''):
+def get_daily_nav(code = '069500',
+                  start_date = '20170101',
+                  end_date = '20240405'):
     session = requests.Session()
 
     session.verify = False
     api_url = 'https://infomaxy.einfomax.co.kr/api/stock/etf/hist'
 
     params = {'code': code,
-            'start_date': start_date,
-            'end_date': end_date}
+              'startDate': start_date,
+              'endDate': end_date}
 
     r = session.get(api_url, params = params, headers = INFOMAX_HEADER)
 

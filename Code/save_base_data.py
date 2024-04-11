@@ -73,7 +73,7 @@ def cache_base_data(date_from = '20100101',
                     output_file_name = 'base_info.json'
                     ):        
     all_tickers = get_krx_all_etf_cum_issue_history(date_from = date_from,
-                                                    date_uspto = date_upto)
+                                                    date_upto = date_upto)
     
     res = get_etf_info(list(all_tickers))
 
