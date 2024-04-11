@@ -37,6 +37,11 @@ def save_naver_attached_data(wb = None,
     codes = list(set(codes))
     st = time()
 
+    for i, pt in enumerate(prev_codes_to_skip):
+            N = len(str(pt))
+            zero_patch = ''.join(['0' for _ in range(max(6-N, 0))])
+            prev_codes_to_skip[i] = zero_patch + pt
+
     _save_naver_attached_data(base_info = base_info,
                              use_prev_data = use_prev_data,
                              prev_list_to_skip = prev_codes_to_skip)
@@ -68,7 +73,7 @@ def cache_base_data(date_from = '20100101',
                     output_file_name = 'base_info.json'
                     ):        
     all_tickers = get_krx_all_etf_cum_issue_history(date_from = date_from,
-                                                    date_upto = date_upto)
+                                                    date_uspto = date_upto)
     
     res = get_etf_info(list(all_tickers))
 

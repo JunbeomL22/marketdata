@@ -20,9 +20,9 @@ def _save_naver_attached_data(base_info,
     if not use_prev_data:
         wr.writerow(['code', 'market cap', 'type', 'issue date', 'ter', 'issuer', 'cu'])
     count = 0
-
+    print(f'\n# of skip_list: {len(prev_list_to_skip)}\n')
     try:
-        for i, ser in base_info.iterrows():
+        for _, ser in base_info.iterrows():
             code = ser['code']
             cu = str(ser['creationunit'])
             
@@ -66,7 +66,7 @@ def _save_naver_attached_data(base_info,
             print(f'{count} : {" | ".join(info_all)}')
             wr.writerow(info_all)
             count += 1
-            time.sleep(0.2)
+            time.sleep(0.3)
     except:
         print('Exception happend. The output file closed')
         f.close()
