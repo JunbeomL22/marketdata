@@ -111,6 +111,38 @@ def get_bond_info(isin_codes):
 
     return res
 
+def get_security_base_info(search = "",
+                            code = "",
+                            name = "",
+                            isin = "",
+                            market = "",
+                            type_name = ""):
+    
+    session = requests.Session()
+    
+    session.verify = False
+    api_url = 'https://infomaxy.einfomax.co.kr/api/stock/code'
+
+    params = {"search": search,
+                "code": code,
+                "name": name,
+                "isin": isin,
+                "market": market,
+                "type": type_name}
+    
+    r = session.get(api_url, params = params, headers = INFOMAX_HEADER)
+
+    success, results = r.json().values()
+
+    res = None
+    if success:
+        res = pd.DataFrame(results)
+    else:
+        raise Exception('infomax crawling failed')
+    
+    return res
+
+
 if __name__ == '__main__':
     res = get_index_list(type_code = '')
     

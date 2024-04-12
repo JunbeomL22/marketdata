@@ -60,8 +60,8 @@ def load_index_list(wb = None,
 
 def load_index_pdf(wb = None,
                    sheet_name = 'IndexData',
-                   output_head = 'N4',
-                   codes = "K2G01P/Q5G01P"):
+                   codes = "K2G01P/Q5G01P"
+                   output_head = 'N4'):
     if wb is None:
         wb = xw.Book.caller()
 

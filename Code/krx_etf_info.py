@@ -7,6 +7,7 @@ from utils import time_format
 from time import time, sleep
 from code_config import data_path
 import xlwings as xw
+import matplotlib.pyplot as plt
 
 def get_krx_etf_ticker(date):
     tickers = stock.get_etf_ticker_list(date)
@@ -118,6 +119,64 @@ def save_krx_etf_trade_history(wb = None,
     x = input()
 
 
+def get_etf_trade_info(fromdate = "20230101",
+                       todate = "20240405",
+                       amount_type = "거래대금",
+                       trade_type = "순매수",
+                       code = None):
+    
+    if isinstance(code, str) and (len(code) != 6):
+        raise ValueError("code must be a string of length 6 (e.g., '069500') or None")
+        
+    if code is None:
+        res = stock.get_etf_trading_volume_and_value(fromdate,
+                                                    todate,
+                                                    amount_type,
+                                                    trade_type)
+    else:
+        res = stock.get_etf_trading_volume_and_value(fromdate,
+                                                    todate,
+                                                    code,
+                                                    amount_type,
+                                                    trade_type
+                                                    )
+    
+    return res
+
+def get_etf_historical_data(fromdate = "20230101",
+                            todate = "20240405",
+                            code = "069500"):
+    if isinstance(code, str) and (len(code) != 6):
+        raise ValueError("code must be a string of length 6 (e.g., '069500') or None")
+    
+    res = stock.get_etf_ohlcv_by_date(fromdate, todate, code)
+    
+    return res
+
+def get_all_etf_info(fromdate = "20240101",
+                     todate = "20240405",
+                     code = "069500"):
+    res1 = get_etf_trade_info(fromdate = fromdate,
+                              todate = todate, 
+                              code = code)
+    
+    res1 = res1.div(100000000.)
+
+    res2 = get_etf_historical_data(fromdate = fromdate, 
+                                   todate = todate, 
+                                   code = code)
+    
+    res2['괴리'] = res2['종가'] - res2['NAV']
+    res2['괴리율'] = res2['괴리'] / res2['NAV']
+
+    res = res1.join(res2)
+
+    return res[['괴리율', 'NAV', '종가', '기관', '기타법인', '개인', '외국인']]
+
 if __name__ == "__main__":
-    xw.Book('D:/Projects/marketdata/Crawler.xlsm').set_mock_caller()
-    tickers = get_krx_etf_ticker('20240405')
+    #res = stock.get_etf_trading_volume_and_value("20230101", "20240405", "069500", "거래대금", "순매수")
+    res = get_all_etf_info(todate = '20240411')
+    #res = get_etf_trade_info()
+    
+
+    
