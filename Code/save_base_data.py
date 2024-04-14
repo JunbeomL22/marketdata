@@ -1,4 +1,4 @@
-from code_config import data_path
+from code_config import etf_base_path
 from time import time, sleep
 from krx_etf_info import get_krx_etf_ticker_history, get_krx_all_etf_cum_issue_history
 from naver_etf_info import _save_naver_attached_data
@@ -25,11 +25,11 @@ def save_naver_attached_data(wb = None,
     waiting_time = float(config['waiting time'])
     crawl_iter = int(config['crawl iter'])
     
-    base_info = pd.read_json(data_path + base_file_name, dtype = 'object')
+    base_info = pd.read_json(etf_base_path + base_file_name, dtype = 'object')
     codes = base_info.code.astype(str).unique().tolist()
 
     if use_prev_data:
-        prev_output = pd.read_csv(data_path + output_file)
+        prev_output = pd.read_csv(etf_base_path + output_file)
         prev_codes_to_skip = prev_output['code'].astype(str).tolist()
     else:
         prev_codes_to_skip = []
@@ -49,7 +49,7 @@ def save_naver_attached_data(wb = None,
     for i in range(1, crawl_iter):
         print("waiting to restart.....")
         sleep(waiting_time)
-        prev_output = pd.read_csv(data_path + output_file)
+        prev_output = pd.read_csv(etf_base_path + output_file)
         prev_codes_to_skip = prev_output['code'].astype(str).tolist()
 
         for i, pt in enumerate(prev_codes_to_skip):
@@ -61,9 +61,9 @@ def save_naver_attached_data(wb = None,
                              use_prev_data = True,
                              prev_list_to_skip = prev_codes_to_skip)
 
-    res = pd.read_csv(data_path + output_file)
+    res = pd.read_csv(etf_base_path + output_file)
     res.drop_duplicates('code', inplace=True)
-    res.to_csv(data_path + output_file, index = False)
+    res.to_csv(etf_base_path + output_file, index = False)
     print(f'elapsed time: {time_format(time() - st, 1)}')
     print('please enter to exit')
     x = input()
@@ -77,7 +77,7 @@ def cache_base_data(date_from = '20100101',
     
     res = get_etf_info(list(all_tickers))
 
-    res.to_json(data_path + output_file_name)
+    res.to_json(etf_base_path + output_file_name)
 
 if __name__ == "__main__":
     xw.Book("D:/Projects/marketdata/MarketData.xlsm").set_mock_caller()

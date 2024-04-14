@@ -169,9 +169,16 @@ def get_all_etf_info(fromdate = "20240101",
     res2['괴리'] = res2['종가'] - res2['NAV']
     res2['괴리율'] = res2['괴리'] / res2['NAV']
 
+    res2['거래대금'] = res2['거래대금'] / 100000000.
+    res1.rename(columns={'기관': '기관 (순매수)',
+                         '기타법인': '기타법인 (순매수)',
+                         '개인': '개인 (순매수)',
+                         '외국인': '외국인 (순매수)'}, inplace=True)
+    
     res = res1.join(res2)
-
-    return res[['괴리율', 'NAV', '종가', '기관', '기타법인', '개인', '외국인']]
+    
+    return res[['괴리율', 'NAV', '종가', '거래대금',
+                '기관 (순매수)', '기타법인 (순매수)', '개인 (순매수)', '외국인 (순매수)']]
 
 if __name__ == "__main__":
     #res = stock.get_etf_trading_volume_and_value("20230101", "20240405", "069500", "거래대금", "순매수")

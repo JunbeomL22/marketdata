@@ -9,14 +9,12 @@ from custom_progress import printProgressBar
 from utils import time_format
 import urllib3;urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-def load_etfpdf(
+def load_etf_pdf(
         wb = None,
         sheet_name = 'EtfPdf',
         output_range_name = 'EtfPdf',
         date_cell = 'C4',
-        match_file_name_cell = 'C5'):             
-             
-    
+        match_file_name_cell = 'C5'):                    
     if wb is None:
         wb = xw.Book.caller()
 
@@ -27,14 +25,13 @@ def load_etfpdf(
     output_range = ws.range(output_range_name)
     output_range.clear_contents()
 
-    match_df = pd.read_json(code_config.data_path + match_file_name, dtype = False)
+    match_df = pd.read_json(code_config.etf_base_path + match_file_name, dtype = False)
 
-    tickers = match_df['ticker'].unique().tolist()
+    tickers = match_df['code'].unique().tolist()
 
     session = requests.Session()
     session.verify = False
     api_url = 'https://infomaxy.einfomax.co.kr/api/stock/etf/port'
-    headers = {"Authorization" : f'bearer {code_config.infomax_api_token}'}
 
     st = time()
     df_list = []
@@ -46,7 +43,7 @@ def load_etfpdf(
                         params = {"code": ticker,
                                 "date": date_str,
                                 "sort": ""},
-                        headers = headers)
+                        headers = code_config.INFOMAX_HEADER)
         printProgressBar(i+1,
                         N,
                         prefix = 'etf-pdf crawling: ',
@@ -64,4 +61,4 @@ def load_etfpdf(
 
 if __name__ == "__main__":
     xw.Book('D:/Projects/marketdata/MarketData.xlsm').set_mock_caller()
-    load_etfpdf()    
+    load_etf_pdf()    

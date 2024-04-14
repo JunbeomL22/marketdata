@@ -6,6 +6,9 @@ import xlwings as xw
 def get_krx_index_list(date = '20240405'):
     tickers = stock.get_index_ticker_list(date, market = 'KOSPI')
     tickers += stock.get_index_ticker_list(date, market = 'KOSDAQ')
+    tickers += stock.get_index_ticker_list(date, market = 'KRX')
+    tickers += stock.get_index_ticker_list(date, market = '테마')
+
 
     ticker_dict = {}
     for ticker in tickers:
