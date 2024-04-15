@@ -21,6 +21,26 @@ def get_index_list(type_name = "", kr_name = "", en_name = "", code = ""):
     res = pd.DataFrame(results)
     return res
 
+def get_index_base_info(code = "", date = "20240405"):
+    session = requests.Session()
+
+    session.verify = False
+    api_url = 'https://infomaxy.einfomax.co.kr/api/index/info'
+
+    params = {"code": code,
+              "date": date}
+    
+    r = session.get(api_url, params = params, headers = INFOMAX_HEADER)
+    success, results = r.json().values()
+
+    res = None
+    if success:
+        res = pd.DataFrame(results)
+    else:
+        raise ValueError(f"index_base_data: {code}")
+    
+    return res
+
 def get_index_pdf(codes):
     session = requests.Session()
     session.verify = False
