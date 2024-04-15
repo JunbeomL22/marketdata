@@ -1,7 +1,8 @@
 from code_config import data_path, INFOMAX_HEADER, etf_base_path
-import sys, json, requests
+import requests
 import pandas as pd
 import xlwings as xw
+import time
 
 def find_etf_include(codes = "KR350101GCB1", 
                      condition = "and",
@@ -32,6 +33,9 @@ def find_etf_include(codes = "KR350101GCB1",
     
     all_df = pd.concat(df_list)
     res = None
+    if all_df.empty:
+        return res
+    
     res_list = []
     if condition == 'and':
         etfs = all_df.etf_isin.unique().tolist()
@@ -48,6 +52,7 @@ def find_etf_include(codes = "KR350101GCB1",
 
             if include:
                 res_list.append(etf_df)
+
         if len(res_list) != 0:
             res = pd.concat(res_list)
             
@@ -62,6 +67,7 @@ def find_etf_include(codes = "KR350101GCB1",
             res = res.merge(base[['isin', 'kr_name', 'net_asset']], left_on='etf_isin', right_on='isin', how='left')
             res.drop(columns = ['search_code', 'isin'], inplace = True)
             res['net_asset'] = res['net_asset'].astype(float) / 100000000.
+
         if pdf_file != "":
             pdf = pd.read_json(data_path + pdf_file, dtype = False)
             res = res.merge(pdf[['isin', 'port_isin', 'port_portion']], left_on=['etf_isin', 'search_isin'], right_on=['isin', 'port_isin'], how='left')
@@ -89,9 +95,15 @@ def load_etf_include(wb = None,
                            base_file = base_file, 
                            pdf_file = pdf_file)
     
-    output_head.options(pd.DataFrame, index = False).value = res
+    if res is not None:
+        output_head.options(pd.DataFrame, index = False).value = res
+    else:
+        print("there is no data")
+        print(f"codes: {codes}, date: {date}, condition: {condition}")
+        time.sleep(3)
 
 
 if __name__ == '__main__':
     xw.Book('D:/Projects/marketdata/MarketData.xlsm').set_mock_caller()
-    res = find_etf_include(codes = "247540/086520/005490/383310", condition = 'and', date = '20240405')
+    #res = find_etf_include(codes = "247540/086520/005490/383310", condition = 'and', date = '20240405')
+    load_etf_include(codes = "247540/086520/005490/383310")
