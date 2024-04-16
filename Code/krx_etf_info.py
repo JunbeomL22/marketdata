@@ -1,13 +1,37 @@
-from pykrx import stock, bond
 import QuantLib as ql
 from datetime import datetime
 import pandas as pd
 from custom_progress import printProgressBar
 from utils import time_format
 from time import time, sleep
-from code_config import data_path
+from code_config import data_path, etf_base_path
 import xlwings as xw
 import matplotlib.pyplot as plt
+from pykrx import stock
+import matplotlib.pyplot as plt
+import matplotlib
+from matplotlib.ticker import FuncFormatter
+
+def to_percent(y, position):
+    # Ignore the passed in position. This has the effect of scaling the default
+    # tick locations.
+    s = str(int(10000 * y)/100)
+
+    # The percent symbol needs escaping in latex
+    if matplotlib.rcParams['text.usetex'] is True:
+        return s + r'$\%$'
+    else:
+        return s + '%'
+
+def to_comma(y, position):
+    # Ignore the passed in position. This has the effect of scaling the default
+    # tick locations.
+    s = '{:0,d}'.format(int(y))
+    return s
+
+# Create formatters
+percent_formatter = FuncFormatter(to_percent)
+comma_formatter = FuncFormatter(to_comma)
 
 def get_krx_etf_ticker(date):
     tickers = stock.get_etf_ticker_list(date)
@@ -153,9 +177,10 @@ def get_etf_historical_data(fromdate = "20230101",
     
     return res
 
-def get_all_etf_info(fromdate = "20240101",
-                     todate = "20240405",
-                     code = "069500"):
+def get_all_etf_info(
+        code = "069500",
+        fromdate = "20240101",
+        todate = "20240405"):
     res1 = get_etf_trade_info(fromdate = fromdate,
                               todate = todate, 
                               code = code)
@@ -180,10 +205,87 @@ def get_all_etf_info(fromdate = "20240101",
     return res[['괴리율', 'NAV', '종가', '거래대금',
                 '기관 (순매수)', '기타법인 (순매수)', '개인 (순매수)', '외국인 (순매수)']]
 
-if __name__ == "__main__":
-    #res = stock.get_etf_trading_volume_and_value("20230101", "20240405", "069500", "거래대금", "순매수")
-    res = get_all_etf_info(todate = '20240411')
-    #res = get_etf_trade_info()
-    
+def graph(
+        inp,
+        field1 = '괴리율',
+        field2 = '거래대금',
+        period = 'W',
+        value_type = 'mean',
+        title = ""):
+    if value_type == "mean":
+        res = inp.resample(period).mean()
+    elif value_type == "last":
+        res = inp.resample(period).last()
+    else:
+        raise ValueError(f'value_type: {value_type}')
 
+    fig, axs = plt.subplots(nrows=2, sharex=True)
+    fig.suptitle(title)
+
+    # Plot 괴리율 in the first subplot
+    if field1 == '괴리율':
+        axs[0].yaxis.set_major_formatter(percent_formatter)
+    else:
+        axs[0].yaxis.set_major_formatter(comma_formatter)
+
+    axs[0].plot(res.index, res[field1], color='blue')
+    axs[0].set_ylabel(field1)#, color='blue')
+    #axs[0].tick_params(axis='y', labelcolor='blue')
+    axs[0].grid(True, linestyle=':', color='gray')  
     
+    # Plot 거래대금 in the second subplot
+    if field2 == '괴리율':
+        axs[1].yaxis.set_major_formatter(percent_formatter)
+    else:
+        axs[1].yaxis.set_major_formatter(comma_formatter)
+    
+    axs[1].plot(res.index, res[field2], color='red')
+    axs[1].set_ylabel(field2)#, color='red')
+    #axs[1].tick_params(axis='y', labelcolor='red')
+    axs[1].grid(True, linestyle=':', color='gray')  
+
+    fig.tight_layout()  # Ensure the subplots do not overlap
+    plt.show()
+
+def load_and_graph(
+        wb = None,
+        sheet_name = 'EtfAnalysis',
+        output_head = 'F3',
+        code = "069500",
+        name = "KODEX 200",
+        fromdate = "",
+        todate = "",
+        field1 = '괴리율',
+        field2 = '거래대금',
+        period = 'W',
+        value_type = 'mean',
+        ):
+    if wb is None:
+        wb = xw.Book.caller()
+    
+    ws = wb.sheets[sheet_name]
+    output_head = ws.range(output_head)
+
+
+    all_info = get_all_etf_info(
+        code = code,
+        fromdate = fromdate,
+        todate = todate,
+        )
+
+    if all_info.shape[0] == 0:
+        raise ValueError('no data')
+    if all_info is None:
+        raise ValueError('all_info is None')
+    
+    title = f'{name} ({code})'
+
+    graph(
+        all_info, 
+        field1 = field1, field2 = field2,
+        period = period, value_type = value_type,
+        title = title,
+        )
+
+    output_head.options(pd.DataFrame, index = True).value = all_info
+                           

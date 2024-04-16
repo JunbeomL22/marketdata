@@ -1,3 +1,5 @@
+Option Explicit
+
 Sub LoadIndexList ()
     Dim thisSht As Worksheet
     Dim sheetName As String
@@ -48,14 +50,14 @@ Sub LoadKrxIndexList()
     Dim dt as String
     Dim code As String
 
-    sheet_name = "IndexData"
-    Set thisSht = Sheets(sheet_name)
+    sheetName = "IndexData"
+    Set thisSht = Sheets(sheetName)
 
-    outputHead = thisSht.Range("C4").Value
-    dt = thisSht.Range("C5").Value
+    dt = thisSht.Range("C4").Value
+    outputHead = thisSht.Range("C5").Value
 
     code = "import krx_index;"
-    code = code + "krx_index.load_krx_index_list(sheet_name = '" & sheet_name & "', "
+    code = code + "krx_index.load_krx_index_list(sheet_name = '" & sheetName & "', "
     code = code + "date = '" & dt & "', "
     code = code + "output_head = '" & outputHead & "')"
 
@@ -65,18 +67,20 @@ End Sub
 Sub LoadKrxIndexPdf()
     Dim thisSht As Worksheet
     Dim sheetName As String
+    Dim codes as String
     Dim outputHead As String
     Dim dt as String
     Dim code As String
 
-    sheet_name = "IndexData"
-    Set thisSht = Sheets(sheet_name)
+    sheetName = "IndexData"
+    Set thisSht = Sheets(sheetName)
 
-    outputHead = thisSht.Range("K4").Value
+    codes = thisSht.Range("K4").Value
     dt = thisSht.Range("K5").Value
+    outputHead = thisSht.Range("K6").Value
 
     code = "import krx_index;"
-    code = code + "krx_index.load_krx_index_pdf(sheet_name = '" & sheet_name & "', "
+    code = code + "krx_index.load_krx_index_pdf(sheet_name = '" & sheetName & "', "
     code = code + "codes = '" & codes & "', "
     code = code + "date = '" & dt & "', "
     code = code + "output_head = '" & outputHead & "')"

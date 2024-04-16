@@ -24,8 +24,8 @@ def get_daily_nav(code = '069500',
         res = pd.DataFrame(results)
         return res
     
-def get_intra_inav(code,
-                   date=''):
+def get_intra_inav(code = '069500',
+                   date = '20240416'):
     session = requests.Session()
     
     session.verify = False
@@ -38,6 +38,7 @@ def get_intra_inav(code,
 
     success, results = r.json().values()
     if not success:
+        print(results)
         raise Exception('Failed to get intra INAV')
     else:
         res = pd.DataFrame(results)
