@@ -47,7 +47,7 @@ Sub LoadKrxIndexList()
     Dim thisSht As Worksheet
     Dim sheetName As String
     Dim outputHead As String
-    Dim dt as String
+    Dim dt as Stri1ng
     Dim code As String
 
     sheetName = "IndexData"

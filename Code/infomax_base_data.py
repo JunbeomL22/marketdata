@@ -9,7 +9,7 @@ def get_etf_info(codes):
     session.verify = False
     api_url = 'https://infomaxy.einfomax.co.kr/api/stock/etf'
 
-    params = {"code": ",".join(codes)}
+    params = {"code": codes.split(",")}
     r = session.get(api_url, params = params, headers = INFOMAX_HEADER)
     success, results = r.json().values()
 

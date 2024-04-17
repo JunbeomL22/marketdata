@@ -11,6 +11,7 @@ from pykrx import stock
 import matplotlib.pyplot as plt
 import matplotlib
 from matplotlib.ticker import FuncFormatter
+import requests
 
 def to_percent(y, position):
     # Ignore the passed in position. This has the effect of scaling the default
