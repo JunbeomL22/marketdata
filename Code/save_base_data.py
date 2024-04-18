@@ -81,6 +81,6 @@ def cache_base_data(date_from = '20100101',
 
 if __name__ == "__main__":
     xw.Book("D:/Projects/marketdata/MarketData.xlsm").set_mock_caller()
-    save_naver_attached_data()
+    #save_naver_attached_data()
     cache_base_data()
 
