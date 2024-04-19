@@ -88,7 +88,6 @@ def select_port_isin(
         pdf_file_name = "etf_pdf_20240416.json",
         base_file_name = "etf_base_info.json",
         full_info_file_name = "full_etf_info.csv",
-        output_file_name = "bond_info.json", 
         etf_types = "국내채권형, 일반/해외채권형, 일반")
     
     etf_types = etf_types.split("/")
@@ -110,14 +109,13 @@ def select_port_isin(
 
     return res
 
-def load_bond_isin(wb = None,
+def load_bond_isin_in_pdf(wb = None,
                    sheet_name = "BondInfo",
-                   output_head = "F3",
                    pdf_file_name = "etf_pdf_20240416.json",
                    base_file_name = "etf_base_info.json",
                    full_info_file_name = "full_etf_info.csv",
-                   output_file_name = "bond_info.json", 
-                   etf_types = "국내채권형, 일반/해외채권형, 일반"):
+                   etf_types = "국내채권형, 일반/해외채권형, 일반",
+                   output_head = "F3"):
     if wb is None:
         wb = xw.Book.caller()
     
@@ -125,7 +123,6 @@ def load_bond_isin(wb = None,
         pdf_file_name = pdf_file_name,
         base_file_name = base_file_name,
         full_info_file_name = full_info_file_name,
-        output_file_name = output_file_name,
         etf_types = etf_types)
                            
     ws = wb.sheets[sheet_name]

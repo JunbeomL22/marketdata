@@ -1,6 +1,6 @@
 import xlwings as xw
 import pandas as pd
-import code_config
+from code_config import data_path, etf_base_path
 import re
 from datetime import datetime
 
@@ -13,8 +13,8 @@ def load_etf_info(wb = None,
     if wb is None:
         wb = xw.Book.caller()
     
-    df = pd.read_json(code_config.data_path + file_name)
-    info_df = pd.read_csv(code_config.data_path + etf_info_file_name)
+    df = pd.read_json(etf_base_path + file_name)
+    info_df = pd.read_csv(etf_base_path + etf_info_file_name)
     res = df.merge(info_df, on='code', how='left')
 
     #def notional_parser(z):
@@ -27,7 +27,7 @@ def load_etf_info(wb = None,
     #res['market cap'] = res['market cap'].apply(notional_parser)
 
     res['cu'] = res['creationunit']
-    res.drop(columns=['market cap'], inplace=True)
+    res.drop(columns=['market cap', 'company_code'], inplace=True)
     res.rename(columns = {'net_asset': 'market cap'}, inplace = True)
     res['market cap'] = res['market cap'].astype(float) / 100000000.0
     res = res.sort_values(by='market cap', ascending=False)
