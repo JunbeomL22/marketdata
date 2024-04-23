@@ -34,13 +34,14 @@ def get_underline_match(infomax_data):
          "바이오 K-뉴딜": "바이오 K-뉴딜 (배당정보없음)", #unknown
          })
     
-    def get_stock_bbg_ticker(type_name, underline, isin):
+    def get_stock_bbg_ticker(inp):
+        type_name, underline, isin = inp
         if type_name == "개별주식":
             return (isin[3:9] + " KS Equity")
         else:
             return underline
         
-    bbg_ticker = df[['underline_type', 'underline', 'underline_isin']].apply(lambda x: get_stock_bbg_ticker(x[0], x[1], x[2]), axis=1)
+    bbg_ticker = df[['underline_type', 'underline', 'underline_isin']].apply(get_stock_bbg_ticker, axis=1)
 
     bbg_ticker = bbg_ticker.replace(
         {"코스피200": "KOSPI2 Index",
@@ -68,6 +69,10 @@ def get_underline_match(infomax_data):
          "BBIG K-뉴딜": "unkown",
          "2차전지 K-뉴딜": "unknown",
          "바이오 K-뉴딜": "unknown",
+         "3년국채": "not given",
+         "5년국채": "not given",
+         "10년국채": "not given",
+         "30년국채": "not given",
          })
     
     data = {}
