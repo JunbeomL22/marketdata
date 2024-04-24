@@ -1,5 +1,5 @@
 from pykrx.website import krx
-from infomax_derivatives import get_fut_past_info, get_underline_match
+from infomax_derivatives import get_fut_info, get_underline_match
 from utils import time_format
 from custom_progress import printProgressBar
 from code_config import data_path
@@ -12,13 +12,14 @@ def get_derivatives_base_data(
     end_date = '20240930',
     drop_spread = True):
 
-    past_fut = get_fut_past_info(
-        endDate = end_date, 
-        startDate = start_date, 
-        drop_spread = drop_spread
-        )
+    fut_info = get_fut_info(
+       kr_name = "",
+       underline="",
+       spread="N",
+       size = 5000,
+       )
     
-    underline_match = get_underline_match(past_fut)
+    underline_match = get_underline_match(fut_info)
 
     ders = krx.future.core.파생상품검색().fetch()
     class_names = ders.index.tolist()
@@ -64,6 +65,8 @@ def get_derivatives_base_data(
         for k, v in underline_match.items():
             res.loc[mask & (res['name'].str[-6:] == k), ['und_isin']] = v
 
+    krx_code = res['krx_und_code']
+    res.loc[krx_code == "AF", ['und_isin', "und_name", "und_bbg"]] = "KR10YT=RR"
     return res
 
 def save_base_derivatives_data(
@@ -102,4 +105,5 @@ def load_base_derivatives_data(
 
     
 xw.Book("D:/Projects/marketdata/MarketData.xlsm").set_mock_caller()
+save_base_derivatives_data(end_date="20240630")
 load_base_derivatives_data()

@@ -9,13 +9,17 @@ def get_underline_match(infomax_data):
     underline = df['underline'].replace(
         {"코스피200": "KOSPI2",
          "미니코스피": "KOSPI2",
+         "코스피200 위클리": "KOSPI2",
+         "미니코스피200": "KOSPI2",
          "코스닥150": "KOSDAQ150",
+         "코스닥글로벌": "KOSDAQG",
          "유로스톡스50": "SX5E",
          "미국달러": "USDKRW",
          "엔": "JPYKRW",
          "유로": "EURKRW",
          "위안": "CNYKRW",
          "3개월무위험금리": "KOFR 3M", #KRFRRATE Index
+         "3개월무위험지표금리": "KOFR 3M", #KRFRRATE Index
          "변동성지수": "VKOSPI",
          "금": "GoldKRW", #XAUKRW Curncy 
          "에너지화학": "KSP2EC",
@@ -29,9 +33,9 @@ def get_underline_match(infomax_data):
          "철강소재": "KSP2SM",
          "생활소비재": "KSP2CS",
          "산업재": "KSP2IN",
-         "BBIG K-뉴딜": "BBIG K-뉴딜 (배당정보없음)", #unknown
-         "2차전지 K-뉴딜": "2차전지 K-뉴딜 (배당정보없음)", #unknown
-         "바이오 K-뉴딜": "바이오 K-뉴딜 (배당정보없음)", #unknown
+         "BBIG K-뉴딜": "not given"
+         "2차전지 K-뉴딜": "not given",
+         "바이오 K-뉴딜": "not given",
          })
     
     def get_stock_bbg_ticker(inp):
@@ -46,13 +50,18 @@ def get_underline_match(infomax_data):
     bbg_ticker = bbg_ticker.replace(
         {"코스피200": "KOSPI2 Index",
          "미니코스피": "KOSPI2 Index",
+         "미니코스피200": "KOSPI2 Index",
+         "코스피200 위클리": "KOSPI2 Index",
          "코스닥150": "KOSDAQ150 Index",
+         "코스닥글로벌": "not given",
+         "KRX300": "KRX300 Index",
          "유로스톡스50": "SX5E Index",
          "미국달러": "USDKRW Curncy",
          "엔": "JPYKRW Curncy",
          "유로": "EURKRW Curncy",
          "위안": "CNYKRW Curncy",
          "3개월무위험금리": "KRFRRATE Index",
+         "3개월무위험지표금리": "KRFRRATE Index",
          "변동성지수": "VKOSPI Index",
          "금": "XAUKRW Curncy",
          "에너지화학": "KSP2EC Index",
@@ -66,9 +75,9 @@ def get_underline_match(infomax_data):
          "철강소재": "KSP2SM Index",
          "생활소비재": "KSP2CS Index",
          "산업재": "KSP2IN Index",
-         "BBIG K-뉴딜": "unkown",
-         "2차전지 K-뉴딜": "unknown",
-         "바이오 K-뉴딜": "unknown",
+         "BBIG K-뉴딜": "not given",
+         "2차전지 K-뉴딜": "not given",
+         "바이오 K-뉴딜": "not given",
          "3년국채": "not given",
          "5년국채": "not given",
          "10년국채": "not given",
@@ -84,12 +93,19 @@ def get_underline_match(infomax_data):
     res = pd.DataFrame(data)
     res = res.drop_duplicates(subset='krx_und_code', keep='first')
 
+    kospi2_custom_isin = "KRxxxxxxxx01"
+    sx5e_custom_isin = "EUxxxxxxxx07"
+    res.loc[res['und_name'] == "KOSPI2", ['und_isin']] = kospi2_custom_isin
+    res.loc[res['und_name'] == "SX5E", ['und_isin']] = sx5e_custom_isin
+
     return res
 
 def get_fut_info(
         kr_name = "",
         underline = "",
-        spread = ""):
+        spread = "",
+        size = 5000,
+        ):
     session = requests.Session()
     
     session.verify = False
@@ -97,7 +113,8 @@ def get_fut_info(
 
     params = {"kr_name": kr_name,
               "underline": underline,
-              "spread": spread
+              "spread": spread,
+              "_size": size,
               }
     
     r = session.get(api_url, params = params, headers = INFOMAX_HEADER)
@@ -124,7 +141,8 @@ def get_option_info(
         underline = "",
         maturity = "",
         option = "",
-        atm = ""):
+        atm = "", 
+        size = 1000):
     session = requests.Session()
 
     session.verify = False
@@ -134,7 +152,8 @@ def get_option_info(
               "underline": underline,
               "maturity": maturity,
               "option": option,
-              "atm": atm
+              "atm": atm,
+              "_size": size,
               }
     
     r = session.get(api_url, params = params, headers = INFOMAX_HEADER)
