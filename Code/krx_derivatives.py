@@ -64,12 +64,10 @@ def get_derivatives_base_data(
         mask = (res['und_name'] == und_name)
         for k, v in underline_match.items():
             res.loc[mask & (res['name'].str[-6:] == k), ['und_isin']] = v
-
-    krx_code = res['krx_und_code']
-    res.loc[krx_code == "AF", ['und_isin', "und_name", "und_bbg"]] = "KR10YT=RR"
+    
     return res
 
-def save_base_derivatives_data(
+def save_derivatives_base_data(
         start_date = "20240423",
         end_date = "20240930",
         drop_spread = True,
@@ -89,7 +87,7 @@ def save_base_derivatives_data(
         res = pd.concat([previous_data, res]).drop_duplicates(subset='isin')
 
 
-def load_base_derivatives_data(
+def load_derivatives_base_data(
         wb = None,
         file_name = "derivatives_base_data.json",
         sheet_name = "DerivativesBase",
@@ -103,7 +101,9 @@ def load_base_derivatives_data(
 
     ws.range(output_head).options(pd.DataFrame, index = False).value = res
 
-    
-xw.Book("D:/Projects/marketdata/MarketData.xlsm").set_mock_caller()
-save_base_derivatives_data(end_date="20240630")
-load_base_derivatives_data()
+
+if __name__ == "__main__":
+    xw.Book("D:/Projects/marketdata/MarketData.xlsm").set_mock_caller()
+    save_base_derivatives_data()
+    load_base_derivatives_data()    
+

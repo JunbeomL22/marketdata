@@ -55,8 +55,10 @@ def get_krx_infomax_combined_etf_info():
 def save_etf_base_data(
         date = "20240421",
         file_name = 'etf_base_data.json'):
-    # if there is no folder named Data/{date}, make it first
-    directory = f'Data/{date}'
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+    root_dir = os.path.dirname(script_dir)
+    directory = os.path.join(root_dir, f'Data/{date}')    
+    
     if not os.path.exists(directory):
         os.makedirs(directory)
 
@@ -70,7 +72,11 @@ def load_etf_base_data(
         file_name = 'etf_base_info.json',
         output_head = 'G3',
         ):
-    df = pd.read_json(f'Data/{dt}/{file_name}')
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+    root_dir = os.path.dirname(script_dir)
+    directory = os.path.join(root_dir, f'Data/{dt}')
+
+    df = pd.read_json(f'{directory}/{file_name}')
     if wb is None:
         wb = xw.Book.caller()
     

@@ -1,6 +1,6 @@
-import sys, json, requests
+import requests
 import pandas as pd
-from code_config import INFOMAX_TOKEN, INFOMAX_HEADER
+from code_config import INFOMAX_HEADER
 # - 
 # -
 def get_etf_info(codes):
@@ -21,15 +21,18 @@ def get_etf_info(codes):
 
     return res    
 
-def get_etf_pdf(codes, date):
+def get_etf_pdf(code = "069500", 
+                date = "",
+                sort = 'value'):
     session = requests.Session()
     # SSL 인증 처리 무효화
     session.verify = False
     api_url = 'https://infomaxy.einfomax.co.kr/api/stock/etf/port'
     
-    params = {"code": ",".join(codes),
+    params = {"code": code,
               "date": date,
-              "sort": ""}
+              "sort": sort
+              }
     
     r = session.get(api_url, params = params, headers = INFOMAX_HEADER)
 
@@ -39,7 +42,7 @@ def get_etf_pdf(codes, date):
     if success:
         res = pd.DataFrame(results)
     else:
-        raise Exception('infomax crawling failed')
+        raise Exception('infomax cr awling failed')
     
     return res
 

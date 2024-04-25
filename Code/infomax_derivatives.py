@@ -2,101 +2,108 @@ from code_config import INFOMAX_HEADER
 import requests
 import pandas as pd
 import xlwings as xw
+from code_config import data_path
+from custom_progress import printProgressBar
 
 def get_underline_match(infomax_data):
-    #df = infomax_data[infomax_data['is_spread'] != 'Y']
     df = infomax_data
-    underline = df['underline'].replace(
-        {"코스피200": "KOSPI2",
-         "미니코스피": "KOSPI2",
-         "코스피200 위클리": "KOSPI2",
-         "미니코스피200": "KOSPI2",
-         "코스닥150": "KOSDAQ150",
-         "코스닥글로벌": "KOSDAQG",
-         "유로스톡스50": "SX5E",
-         "미국달러": "USDKRW",
-         "엔": "JPYKRW",
-         "유로": "EURKRW",
-         "위안": "CNYKRW",
-         "3개월무위험금리": "KOFR 3M", #KRFRRATE Index
-         "3개월무위험지표금리": "KOFR 3M", #KRFRRATE Index
-         "변동성지수": "VKOSPI",
-         "금": "GoldKRW", #XAUKRW Curncy 
-         "에너지화학": "KSP2EC",
-         "정보기술": "KSP2IT",
-         "금융지수": "KSP2FI",
-         "경기소비재": "KSP2CD",
-         "고배당50": "KOSPIHDY",
-         "배당성장50": "KOSPIGD",
-         "건설": "KSP2CM",
-         "헬스케어": "KSP2HC",
-         "철강소재": "KSP2SM",
-         "생활소비재": "KSP2CS",
-         "산업재": "KSP2IN",
-         "BBIG K-뉴딜": "not given"
-         "2차전지 K-뉴딜": "not given",
-         "바이오 K-뉴딜": "not given",
-         })
-    
-    def get_stock_bbg_ticker(inp):
-        type_name, underline, isin = inp
-        if type_name == "개별주식":
-            return (isin[3:9] + " KS Equity")
+
+    def get_result(inp):
+        code, isin, name = inp
+        """
+        returns isin, name, and bbg_ticker
+        """
+        if name == "유로스톡스50":
+            res = code, "EUxxxxxxxx50", "SX5E", "SX5E Index"
+        elif name == "미국달러":
+            res = code, isin, "USDKRW", "USDKRW Curncy"
+        elif name == "엔":
+            res = code, isin, "JPYKRW", "JPYKRW Curncy"
+        elif name == "유로":
+            res = code, isin, "EURKRW", "EURKRW Curncy"
+        elif name == "위안":
+            res = code, isin, "CNYKRW", "CNYKRW Curncy"
+        elif name in ["3개월무위험금리", "3개월무위험지표금리"]:
+            res = code, "KRxxxxKOFR3M", "KOFR 3M", "KRFRRATE Index"
+        elif name == "변동성지수":
+            res = code, isin, "VKOSPI", "VKOSPI Index"
+        elif name == "금":
+            res = code, isin, "GoldKRW", "XAUKRW Curncy"
+        elif name in ("코스피200", "미니코스피", "미니코스피200", "코스피200 위클리"):
+            res = code, "KRxxxxxxKSP2", "KOSPI2", "KOSPI2 Index"
+        elif name == "코스닥150":
+            res = code, "KRxxxKSDQ150", "KOSDAQ150", "KOSDAQ150 Index"
+        elif name == "KRX300":
+            res = code, "KRxxxxKRX300", "KRX300", "KRX300 Index"
+        elif (isin == "KRD020020GV9") or (name == "코스닥 글로벌 지수"):
+            res = code, isin, "KOSDAQG", "not given"
+        elif (isin == "KRD020020362") or (name == "코스피200 에너지화학 섹터지수"):
+            res = code, isin, "에너지화확", "KSP2EC Index"
+        elif (isin == "KRD020020370") or (name == "코스피200 정보기술 섹터지수"):
+            res = code, isin, "정보기술", "KSP2IT Index"
+        elif (isin == "KRD020020388") or (name == "코스피200 금융 섹터지수"):
+            res = code, isin, "금융지수", "KSP2FI Index"
+        elif (isin == "KRD020020404") or (name == "코스피200 경기소비재 섹터지수"):
+            res = code, isin, "경기소비재", "KSP2CD Index"
+        elif (isin == "KRD020021329") or (name == "코스피 고배당 50"):
+            res = code, isin, "고배당50", "KOSPIHDY Index"
+        elif (isin == "KRD020021311") or (name == "코스피 배당성장 50"):
+            res = code, isin, "배당성장50", "KOSPIGD Index"
+        elif (isin == "KRD020020339") or (name == "코스피200 건설 섹터지수"):
+            res = code, isin, "건설", "KSP2CM Index"
+        elif (isin == "KRD020020347") or (name == "코스피200 중공업 섹터지수"):
+            res = code, isin, "중공업", "not given"
+        elif (isin == "KRD020021397") or (name == "코스피200 헬스케어 섹터지수"):
+            res = code, isin, "헬스케어", "KSP2HC Index"
+        elif (isin == "KRD020020354") or (name == "코스피200 철강소재 섹터지수"):
+            res = code, isin, "철강소재", "KSP2SM Index" 
+        elif (isin == "KRD020020396") or (name == "코스피200 생활소비재 섹터지수"):
+            res = code, isin, "생활소비재", "KSP2CS Index"
+        elif (isin == "KRD020021386") or (name == "코스피200 산업재 섹터지수"):
+            res = code, isin, "산업재", "KSP2IN Index"
+        elif (isin == "KRD020023085") or (name == "KRX BBIG 지수"):
+            res = code, isin, "BBIG K-뉴딜", "not given"
+        elif (isin == "KRD020023127") or (name == "KRX 2차전지 TOP 10 지수"):
+            res = code, isin, "2차전지 TOP 10", "not given"
+        elif (isin == "KRD020023119") or (name == "KRX 바이오 TOP 10 지수"):
+            res = code, isin, "바이오 TOP 10", "not given"
+        elif (isin == "KR7161510003") or (name == "ARIRANG 고배당주"):
+            res = code, isin, "ARIRANG 고배당주", "not given"
+        elif "국채" in name:
+            res = code, isin, name, "not used"
         else:
-            return underline
+            res = code, isin, name, isin[3:9] + " KS Equity"
         
-    bbg_ticker = df[['underline_type', 'underline', 'underline_isin']].apply(get_stock_bbg_ticker, axis=1)
+        return pd.Series(res)
+        
+    res = df[['underline_code', 
+              'underline_isin', 
+              'underline']].apply(get_result, axis = 1)
 
-    bbg_ticker = bbg_ticker.replace(
-        {"코스피200": "KOSPI2 Index",
-         "미니코스피": "KOSPI2 Index",
-         "미니코스피200": "KOSPI2 Index",
-         "코스피200 위클리": "KOSPI2 Index",
-         "코스닥150": "KOSDAQ150 Index",
-         "코스닥글로벌": "not given",
-         "KRX300": "KRX300 Index",
-         "유로스톡스50": "SX5E Index",
-         "미국달러": "USDKRW Curncy",
-         "엔": "JPYKRW Curncy",
-         "유로": "EURKRW Curncy",
-         "위안": "CNYKRW Curncy",
-         "3개월무위험금리": "KRFRRATE Index",
-         "3개월무위험지표금리": "KRFRRATE Index",
-         "변동성지수": "VKOSPI Index",
-         "금": "XAUKRW Curncy",
-         "에너지화학": "KSP2EC Index",
-         "정보기술": "KSP2IT Index",
-         "금융지수": "KSP2FI Index",
-         "경기소비재": "KSP2CD Index",
-         "고배당50": "KOSPIHDY Index",
-         "배당성장50": "KOSPIGD Index",
-         "건설": "KSP2CM Index",
-         "헬스케어": "KSP2HC Index",
-         "철강소재": "KSP2SM Index",
-         "생활소비재": "KSP2CS Index",
-         "산업재": "KSP2IN Index",
-         "BBIG K-뉴딜": "not given",
-         "2차전지 K-뉴딜": "not given",
-         "바이오 K-뉴딜": "not given",
-         "3년국채": "not given",
-         "5년국채": "not given",
-         "10년국채": "not given",
-         "30년국채": "not given",
-         })
+    res.rename(columns = {
+        0: 'krx_und_code',
+        1: 'und_isin',
+        2: 'und_name',
+        3: 'und_bbg'
+    }, inplace = True)
     
-    data = {}
-    data['krx_und_code'] = df['underline_code'].tolist()
-    data['und_isin'] = df['underline_isin'].tolist()
-    data['und_name'] = underline.tolist()
-    data['und_bbg'] = bbg_ticker.tolist()
+    new_row1 = pd.DataFrame({
+        'krx_und_code': ['04'],
+        'und_isin': ['KRxxxxVKOSPI'],
+        'und_name': ['VKOSPI'],
+        'und_bbg': ['VKOSPI Index']
+    })
+    new_row2 = pd.DataFrame({
+        'krx_und_code': ['AF'],
+        'und_isin': ['KRxxxxxxKSP2'],
+        'und_name': ['KOSPI2'],
+        'und_bbg': ['KOSPI2 Index']
+    })
+    
+    res = pd.concat([res, new_row1, new_row2])
 
-    res = pd.DataFrame(data)
-    res = res.drop_duplicates(subset='krx_und_code', keep='first')
+    res.drop_duplicates(subset = 'krx_und_code', inplace = True)
 
-    kospi2_custom_isin = "KRxxxxxxxx01"
-    sx5e_custom_isin = "EUxxxxxxxx07"
-    res.loc[res['und_name'] == "KOSPI2", ['und_isin']] = kospi2_custom_isin
-    res.loc[res['und_name'] == "SX5E", ['und_isin']] = sx5e_custom_isin
 
     return res
 
@@ -320,6 +327,85 @@ def load_fut_info(wb = None,
 
     ws.range(output_head).options(pd.DataFrame, index = False).value = fut_info
 
+def get_connected_fut(
+        underline = "",
+        start_date = "",
+        end_date = "",
+    ):
+    session = requests.Session()
+    
+
+    session.verify = False
+    api_url = 'https://infomaxy.einfomax.co.kr/api/future/active'
+
+    params = {"underline": underline,
+              "startDate": start_date,
+              "endDate": end_date
+              }
+    
+    r = session.get(api_url, params = params, headers = INFOMAX_HEADER)
+
+    success, results = r.json().values()
+    res = None
+    if success:
+        res = pd.DataFrame(results)
+    else:
+        raise Exception(f'infomax future crawling failed\n\
+                        get_connected_fut\n\
+                        {underline}\n\
+                        {start_date}\n\
+                        {end_date}\n\
+                        {api_url}\n\
+                        {params}')
+    
+    return res
+
+def load_all_connected_future(
+        start_date = "",
+        end_date = "",
+        basis_type = "underline_basis",
+        derivatives_file = "derivatives_base_data.json",
+        wb = None,
+        sheet_name = "FindETF",
+        output_head = "K4",
+        ):
+    # - 
+    derivatives = pd.read_json(f'{data_path}/{derivatives_file}', orient='records')
+    derivatives = derivatives[~derivatives['option_type'].str.contains('옵션')]
+    all_krx_codes = derivatives['krx_und_code'].unique().tolist()
+    name_match = dict(zip(derivatives['krx_und_code'], derivatives['und_name']))
+
+    res = []
+    N = len(all_krx_codes)
+    for underline in all_krx_codes:
+        connected_fut = get_connected_fut(
+            underline = underline,
+            start_date = start_date,
+            end_date = end_date
+        )
+        printProgressBar(
+            all_krx_codes.index(underline) + 1,
+            N,
+            prefix = 'connected future crawling: ',
+            suffix = f'complete', length = 20
+        )
+        if len(connected_fut) == 0:
+            continue
+
+        v = connected_fut.set_index('date').sort_index(ascending=False)
+        v = v[basis_type]/v['theoretical_price']
+        v = pd.DataFrame(v, columns = [f'{name_match[underline]} {(underline)}'])
+        res.append(v)
+    
+    res = pd.concat(res, axis = 1)
+
+    if wb is None:
+        wb = xw.Book.caller()
+
+    ws = wb.sheets[sheet_name]
+    ws.range(output_head).options(pd.DataFrame, index = True).value = res
+        
+load_all_connected_future(start_date="20230901", end_date="20240315")
 if __name__ == "__main__":
     xw.Book('D:/Projects/marketdata/MarketData.xlsm').set_mock_caller()
     load_option_info()

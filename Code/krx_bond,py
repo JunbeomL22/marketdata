@@ -1,0 +1,40 @@
+import requests
+import pandas as pd
+
+r = requests.post(
+    url = "http://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd",
+    params = {"bld": "dbms/MDC/STAT/standard/MDCSTAT09801",
+            "locale": "ko_KR",
+            "mktId": "KTS",
+            "trdDd": "20240423",
+            "money": 2,
+            "csvxls_isNo": False}
+)
+    
+KTB = pd.DataFrame(r.json()['output'])
+
+r = requests.post(
+    url = "http://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd",
+    params = {"bld": "dbms/MDC/STAT/standard/MDCSTAT09801",
+            "locale": "ko_KR",
+            "mktId": "BND",
+            "trdDd": "20240423",
+            "money": 2,
+            "csvxls_isNo": False}
+)
+    
+Credit = pd.DataFrame(r.json()['output'])
+
+r = requests.post(
+    url = "http://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd",
+    params = {"bld": "dbms/MDC/STAT/standard/MDCSTAT09801",
+            "locale": "ko_KR",
+            "mktId": "SMB",
+            "trdDd": "20240423",
+            "money": 2,
+            "csvxls_isNo": False}
+)
+    
+SMB = pd.DataFrame(r.json()['output'])
+
+
