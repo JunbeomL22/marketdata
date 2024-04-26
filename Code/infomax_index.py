@@ -1,5 +1,5 @@
 from code_config import INFOMAX_HEADER
-import json, requests
+import requests
 import pandas as pd
 import xlwings as xw
 
@@ -17,11 +17,15 @@ def get_index_list(type_name = "", kr_name = "", en_name = "", code = ""):
     r = session.get(api_url, params = params, headers = INFOMAX_HEADER)
 
     success, results = r.json().values()
-
-    res = pd.DataFrame(results)
+    res = None
+    if success:
+        res = pd.DataFrame(results)
+    else:
+        raise ValueError(f"index_list: {type_name}")
+    
     return res
 
-def get_index_base_info(code = "", date = "20240405"):
+def get_index_base_info(code = "", date = "20240425"):
     session = requests.Session()
 
     session.verify = False
@@ -41,12 +45,40 @@ def get_index_base_info(code = "", date = "20240405"):
     
     return res
 
+def get_index_daily(
+        code = "",
+        start_date = "",
+        end_date = "",):
+    session = requests.Session()
+    session.verify = False
+    api_url = 'https://infomaxy.einfomax.co.kr/api/index/hist'
+
+    params = {
+        "code": code, 
+        "startDate": start_date,
+        "endDate": end_date,
+    }
+
+    r = session.get(api_url, params = params, headers = INFOMAX_HEADER)
+
+    success, results = r.json().values()
+
+    res = None
+    if success:
+        res = pd.DataFrame(results)
+    else:
+        raise ValueError(f"get_index_daily: {code}")
+    
+    return res
+
 def get_index_pdf(codes):
     session = requests.Session()
     session.verify = False
     api_url = 'https://infomaxy.einfomax.co.kr/api/index/constituents'
 
     df_list = []
+    if isinstance(codes, str):
+        codes = codes.split(',')
     for code in codes:
         params = {"code": code}
 

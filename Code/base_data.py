@@ -32,7 +32,7 @@ def get_krx_infomax_combined_etf_info():
     krx_base['code'] = krx_base['code'].apply(lambda x: str(x).zfill(6))
     codes = krx_base.code.astype(str).unique().tolist()
     
-    infomax_base = get_etf_info(codes)
+    infomax_base = get_etf_info(",".join(codes))
     infomax_base.rename(
         columns={
             "replication": "replication (infomax)",

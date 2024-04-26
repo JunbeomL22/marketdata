@@ -52,7 +52,7 @@ def get_underline_match(infomax_data):
         elif (isin == "KRD020020339") or (name == "코스피200 건설 섹터지수"):
             res = code, isin, "건설", "KSP2CM Index"
         elif (isin == "KRD020020347") or (name == "코스피200 중공업 섹터지수"):
-            res = code, isin, "중공업", "not given"
+            res = code, isin, "중공업", "KSP2ST Index"
         elif (isin == "KRD020021397") or (name == "코스피200 헬스케어 섹터지수"):
             res = code, isin, "헬스케어", "KSP2HC Index"
         elif (isin == "KRD020020354") or (name == "코스피200 철강소재 섹터지수"):
@@ -68,7 +68,7 @@ def get_underline_match(infomax_data):
         elif (isin == "KRD020023119") or (name == "KRX 바이오 TOP 10 지수"):
             res = code, isin, "바이오 TOP 10", "not given"
         elif (isin == "KR7161510003") or (name == "ARIRANG 고배당주"):
-            res = code, isin, "ARIRANG 고배당주", "not given"
+            res = code, isin, "ARIRANG 고배당주", "161510 KS Equity"
         elif "국채" in name:
             res = code, isin, name, "not used"
         else:
