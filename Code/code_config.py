@@ -8,4 +8,4 @@ colors = ['yellowgreen', 'gold', 'lightblue', 'lightcoral', 'green',
 jsondb_dir = 'C:/JsonDB/'
 root_dir = 'D:/Projects/marketdata/'
 
-INFOMAX_HEADER = {"Authorization" : f'bearer {INFOMAX_TOKEN}'}
+INFOMAX_HEADER = {"Authorization" : f'bearer {infomax_key}'}
