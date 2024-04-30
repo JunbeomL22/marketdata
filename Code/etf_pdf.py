@@ -1,8 +1,7 @@
 import xlwings as xw
 import pandas as pd
-from code_config import root_dir
+from code_config import jsondb_dir
 import time
-import requests
 from custom_progress import printProgressBar
 from utils import time_format
 import urllib3;urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -21,7 +20,7 @@ def load_etf_pdf(
         wb = xw.Book.caller()
 
     ws = wb.sheets[sheet_name]
-    directory = os.path.join(root_dir, f'Data/{dt}')
+    directory = os.path.join(jsondb_dir, dt)
 
     # if there is no pdf file, raise error message
     if not os.path.exists(f'{directory}/{pdf_file}'):
@@ -35,7 +34,8 @@ def save_etf_pdf(
         dt = "20240424",
         base_info_file = 'etf_base_info.json',
         pdf_file = 'etf_pdf.json'):
-    directory = os.path.join(root_dir, f'Data/{dt}')
+    directory = os.path.join(jsondb_dir, dt)
+    
     file = f'{directory}/{base_info_file}'
 
     if not os.path.exists(file):

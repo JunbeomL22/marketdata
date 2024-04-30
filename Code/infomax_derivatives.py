@@ -2,7 +2,7 @@ from code_config import INFOMAX_HEADER
 import requests
 import pandas as pd
 import xlwings as xw
-from code_config import data_path
+from code_config import jsondb_dir
 from custom_progress import printProgressBar
 
 def get_underline_match(infomax_data):
@@ -361,6 +361,7 @@ def get_connected_fut(
     return res
 
 def load_all_connected_future(
+        parameter_date = "20240423",
         start_date = "",
         end_date = "",
         basis_type = "underline_basis",
@@ -370,7 +371,10 @@ def load_all_connected_future(
         output_head = "K4",
         ):
     # - 
-    derivatives = pd.read_json(f'{data_path}/{derivatives_file}', orient='records')
+    derivatives = pd.read_json(
+        f'{jsondb_dir}/{parameter_date}/{derivatives_file}', 
+        orient='records')
+    
     derivatives = derivatives[~derivatives['option_type'].str.contains('옵션')]
     all_krx_codes = derivatives['krx_und_code'].unique().tolist()
     name_match = dict(zip(derivatives['krx_und_code'], derivatives['und_name']))
@@ -405,7 +409,6 @@ def load_all_connected_future(
     ws = wb.sheets[sheet_name]
     ws.range(output_head).options(pd.DataFrame, index = True).value = res
         
-load_all_connected_future(start_date="20230901", end_date="20240315")
 if __name__ == "__main__":
     xw.Book('D:/Projects/marketdata/MarketData.xlsm').set_mock_caller()
     load_option_info()

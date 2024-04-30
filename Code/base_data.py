@@ -4,6 +4,7 @@ from pykrx.website import krx
 from datetime import datetime
 import xlwings  as xw
 import os
+from code_config import jsondb_dir
 
 def get_krx_infomax_combined_etf_info():
     krx_base = krx.ETF_전종목기본종목().fetch()
@@ -55,9 +56,7 @@ def get_krx_infomax_combined_etf_info():
 def save_etf_base_data(
         date = "20240421",
         file_name = 'etf_base_data.json'):
-    script_dir = os.path.dirname(os.path.realpath(__file__))
-    root_dir = os.path.dirname(script_dir)
-    directory = os.path.join(root_dir, f'Data/{date}')    
+    directory = os.path.join(jsondb_dir, date)    
     
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -72,9 +71,7 @@ def load_etf_base_data(
         file_name = 'etf_base_info.json',
         output_head = 'G3',
         ):
-    script_dir = os.path.dirname(os.path.realpath(__file__))
-    root_dir = os.path.dirname(script_dir)
-    directory = os.path.join(root_dir, f'Data/{dt}')
+    directory = os.path.join(jsondb_dir, dt)
 
     df = pd.read_json(f'{directory}/{file_name}')
     if wb is None:

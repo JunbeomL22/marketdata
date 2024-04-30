@@ -1,11 +1,11 @@
 from pykrx.website import krx
 from infomax_derivatives import get_fut_info, get_underline_match
-from utils import time_format
 from custom_progress import printProgressBar
-from code_config import data_path
+from code_config import jsondb_dir
 import pandas as pd
 from krx_ktbf_underline import get_ktbf_underline
 import xlwings as xw
+import os
 
 def get_derivatives_base_data(
     start_date = '20240423',
@@ -68,10 +68,10 @@ def get_derivatives_base_data(
     return res
 
 def save_derivatives_base_data(
+        parameter_date = "20240423",
         start_date = "20240423",
         end_date = "20240930",
         drop_spread = True,
-        cache_type = "overwrite",
         file_name = "derivatives_base_data.json"):
     # - 
     res = get_derivatives_base_data(
@@ -80,15 +80,14 @@ def save_derivatives_base_data(
         drop_spread = drop_spread
     )
     
-    if cache_type == "overwrite":
-        res.to_json(f'{data_path}/{file_name}', orient='records')
-    elif cache_type == "append":
-        previous_data = pd.read_json(f'{data_path}/{file_name}', orient='records')
-        res = pd.concat([previous_data, res]).drop_duplicates(subset='isin')
-
+    if not os.path.exists(f'{jsondb_dir}/{parameter_date}'):
+        os.makedirs(f'{jsondb_dir}/{parameter_date}')
+    
+    res.to_json(f'{jsondb_dir}/{parameter_date}/{file_name}', orient='records')
 
 def load_derivatives_base_data(
         wb = None,
+        parameter_date = "20240423",
         file_name = "derivatives_base_data.json",
         sheet_name = "DerivativesBase",
         output_head = "F15",
@@ -97,13 +96,17 @@ def load_derivatives_base_data(
         wb = xw.Book.caller()
 
     ws = wb.sheets[sheet_name]
-    res = pd.read_json(f'{data_path}/{file_name}', orient='records')
+    res = pd.read_json(
+        f'{jsondb_dir}/{parameter_date}/{file_name}',
+        orient='records'
+        )
 
     ws.range(output_head).options(pd.DataFrame, index = False).value = res
 
 
 if __name__ == "__main__":
     xw.Book("D:/Projects/marketdata/MarketData.xlsm").set_mock_caller()
-    save_base_derivatives_data()
-    load_base_derivatives_data()    
+    save_derivatives_base_data()
+    
+ 
 

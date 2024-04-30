@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import xlwings as xw
 import time
-from code_config import root_dir
+from code_config import jsondb_dir
 
 def find_etf(
         wb = None,
@@ -14,7 +14,9 @@ def find_etf(
         pdf_file = "etf_pdf.json",
         output_head = "E4"
         ):
-    directory = os.path.join(root_dir, f'Data/{dt}')
+    # - 
+    directory = os.path.join(jsondb_dir, dt)
+                             
     pdf_file = f'{directory}/{pdf_file}'
     if not os.path.exists(pdf_file):
         raise ValueError(f'{pdf_file} does not exist. Make the pdf first or copy the file to the directory.')
@@ -25,8 +27,7 @@ def find_etf(
     if all_futures == "N":
         codes = codes.split('/')
     else:
-        der_dir = os.path.join(root_dir, f'Data')
-        derivative_file = f'{der_dir}/{derivative_file}'
+        derivative_file = f'{directory}/{derivative_file}'
         if not os.path.exists(derivative_file):
             raise ValueError(f'{derivative_file} does not exist. Make the derivative file first or copy the file to the directory.')
         
@@ -52,7 +53,6 @@ def find_etf(
     ws = wb.sheets[sheet_name]
     ws.range(output_head).options(pd.DataFrame, index=False).value = res
     
-
 def load_etf_include(wb = None,
                      sheet_name = 'FindETF',
                      codes = '247540/086520/005490/383310',
@@ -79,7 +79,6 @@ def load_etf_include(wb = None,
         print("there is no data")
         print(f"codes: {codes}, date: {date}, condition: {condition}")
         time.sleep(3)
-
 
 if __name__ == '__main__':
     xw.Book('D:/Projects/marketdata/MarketData.xlsm').set_mock_caller()
