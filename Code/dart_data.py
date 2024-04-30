@@ -2,15 +2,14 @@ import requests
 import zipfile
 import io
 import pandas as pd
-
-api_key = "a4483b96ee3751c6f0214223e3de4df3a73449bd"
+from api_keys import dart_key
 
 url = "https://opendart.fss.or.kr/api/corpCode.xml"
 
 response = requests.get(
     url = url, 
     verify = False,
-    params = {"crtfc_key": api_key},
+    params = {"crtfc_key": dart_key},
     )
 
 # Create a BytesIO object from the content
@@ -31,7 +30,7 @@ div_resp = requests.get(
     url = div_url, 
     verify = False,
     params = {
-        "crtfc_key": api_key,
+        "crtfc_key": dart_key,
         "corp_code": "00126380",
         "bsns_year": "2023",
         "reprt_code": "11011",
