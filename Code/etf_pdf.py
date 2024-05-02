@@ -32,7 +32,7 @@ def load_etf_pdf(
        
 def save_etf_pdf(
         dt = "20240424",
-        base_info_file = 'etf_base_info.json',
+        base_info_file = 'etf_base_data.json',
         pdf_file = 'etf_pdf.json'):
     directory = os.path.join(jsondb_dir, dt)
     
@@ -49,12 +49,16 @@ def save_etf_pdf(
     N = len(codes)
 
     for i, ticker in enumerate(codes):
-        df = infomax_base_data.get_etf_pdf(
-            code = ticker, 
-            date = dt,
-            sort = "value"
-            )
-        df_list.append(df)
+        try:
+            df = infomax_base_data.get_etf_pdf(
+                code = ticker, 
+                date = dt,
+                sort = "value"
+                )
+            df_list.append(df)
+        except Exception as e:
+            raise Exception(f"An error occurred with ticker {ticker}: {str(e)}")
+        
         printProgressBar(
             i+1,
             N,
@@ -62,7 +66,9 @@ def save_etf_pdf(
             suffix = f'complete (time: {time_format(time.time() - st)})', length = 20
             )
         
-
+    if len(df_list) == 0:
+        raise ValueError('No data retrieved. Check the data.')
+    
     res = pd.concat(df_list)
     res.drop(columns = ['admin_number'], inplace = True)
     res['port_portion'] = res['port_value'] / res['etf_value']
@@ -73,4 +79,7 @@ def save_etf_pdf(
 
 if __name__ == "__main__":
     xw.Book('D:/Projects/marketdata/MarketData.xlsm').set_mock_caller()
-    save_etf_pdf()    
+    save_etf_pdf(
+        dt = '20240430',
+        base_info_file='etf_base_data.json',
+    )    

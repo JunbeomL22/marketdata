@@ -46,32 +46,38 @@ def get_krx_infomax_combined_etf_info():
     res = krx_base.merge(infomax_base[['isin', 'replication (infomax)', 'market cap']], 
                          on = 'isin', how = 'left')
     
-    res = res[['isin', 'code', 'short name', 'market cap', 'issuer', 'issue date', 
-               'etf type', 'replication (krx)', 'market type', 'asset class', 'creation unit',
-               'total fee', 'tax type',  'replication (infomax)', 
-               'target index', 'index provider']]
+    res = res[['isin', 'code', 'short name', 'market cap', 'issuer', 'issue date', 'etf type', 
+               'replication (krx)', 'market type', 'asset class', 'creation unit', 'total fee', 
+               'tax type',  'replication (infomax)', 'target index', 'index provider']]
 
     return res
 
 def save_etf_base_data(
-        date = "20240421",
+        retrieval_date = "20240421",
+        parameter_date = "20240421",
         file_name = 'etf_base_data.json'):
-    directory = os.path.join(jsondb_dir, date)    
+    directory = os.path.join(jsondb_dir, parameter_date)    
     
     if not os.path.exists(directory):
         os.makedirs(directory)
 
     res = get_krx_infomax_combined_etf_info()
+    # Add 'retrieval date' column with the given retrieval_date as its value
+    res['retrieval date'] = retrieval_date
+
+    # Make 'retrieval date' the first column
+    res.insert(0, 'retrieval date', res.pop('retrieval date'))
+
     res.to_json(f'{directory}/{file_name}')
 
 def load_etf_base_data(
         wb = None,
         sheet_name = 'BaseData',
-        dt = "20240421",
+        parameter_date = "20240421",
         file_name = 'etf_base_info.json',
         output_head = 'G3',
         ):
-    directory = os.path.join(jsondb_dir, dt)
+    directory = os.path.join(jsondb_dir, parameter_date)
 
     df = pd.read_json(f'{directory}/{file_name}')
     if wb is None:
@@ -83,7 +89,6 @@ def load_etf_base_data(
     ws = wb.sheets[sheet_name]
     ws.range(output_head).options(pd.DataFrame, index = False).value = df
     
-
 if __name__ == "__main__":
     xw.Book("D:/ProjectsE/marketdata/MarketData.xlsm").set_mock_caller()
     save_etf_base_data()

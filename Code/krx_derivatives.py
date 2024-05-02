@@ -6,6 +6,7 @@ import pandas as pd
 from krx_ktbf_underline import get_ktbf_underline
 import xlwings as xw
 import os
+from time import sleep
 
 def get_derivatives_base_data(
     start_date = '20240423',
@@ -29,6 +30,7 @@ def get_derivatives_base_data(
     N = len(class_names)
     for i, name in enumerate(class_names):
         df_list.append(worker.fetch(prodId = name))
+        sleep(2)
         printProgressBar(i, N, prefix = 'Progress:', suffix = 'Complete', length = 20)
 
     res = pd.concat(df_list)
@@ -58,9 +60,12 @@ def get_derivatives_base_data(
         inplace = True
     )
 
+    print("base retrieval completed. Retrieving KTBF underline ISINs...")
     ktbf_list = ["3년국채", "5년국채", "10년국채", "30년국채"]
     for und_name in ktbf_list:
         underline_match = get_ktbf_underline(und_name)
+        print(f"retrieved {und_name} underline ISINs. Sleeping 2 seconds...")
+        sleep(2)
         mask = (res['und_name'] == und_name)
         for k, v in underline_match.items():
             res.loc[mask & (res['name'].str[-6:] == k), ['und_isin']] = v

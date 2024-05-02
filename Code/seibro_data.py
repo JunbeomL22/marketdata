@@ -1,7 +1,8 @@
 import requests
 import pandas as pd
 import xml.etree.ElementTree as ET
-from time import sleep
+from time import sleep, time
+from utils import time_format
 
 def get_seibro_etf_dividend(
         start_date = "20240401",
@@ -41,10 +42,14 @@ def get_seibro_etf_dividend(
         </reqParam>
         '''
 
+        st = time()
         response = requests.post(url, headers=headers, data=data, verify=False)
+        print(f'The page-{i} is processed. Time: {time_format(time() - st)}')
+
         xml_data = response.text
         root = ET.fromstring(xml_data)
         
+        st = time()
         data_list = []
         for data in root.findall('data'):
             result = data.find('result')
@@ -58,7 +63,8 @@ def get_seibro_etf_dividend(
         df = pd.DataFrame(data_list)
         df_list.append(df)
 
-        print(f'{i} pages are processed. Sleeping for 5 seconds...')
+        print(f'The data in page-{i} is collected. Time: {time_format(time() - st)}')
+        print('Sleeping for 5 seconds...')
         sleep(5)
 
     res = pd.concat(df_list)
@@ -78,48 +84,68 @@ def get_seibro_etf_dividend(
 
     return res
 
-url = 'https://seibro.or.kr/websquare/engine/proworks/callServletService.jsp'
+def get_seibro_stock_dividend(
+        start_date = "20240330",
+        end_date = "20240505",):
+    url = 'https://seibro.or.kr/websquare/engine/proworks/callServletService.jsp'
 
-# Set the headers
-headers = {
-    'Referer': 'https://seibro.or.kr/websquare/control.jsp?w2xPath=/IPORTAL/user/company/BIP_CNTS01041V.xml&menuNo=285'
-}
+    # Set the headers
+    headers = {
+        'Referer': 'https://seibro.or.kr/websquare/control.jsp?w2xPath=/IPORTAL/user/company/BIP_CNTS01041V.xml&menuNo=285'
+    }
 
-data = '''
-<reqParam action="divStatInfoPList" task="ksd.safe.bip.cnts.Company.process.EntrFnafInfoPTask">
-    <RGT_STD_DT_FROM value="20240330"/>
-    <RGT_STD_DT_TO value="20240430"/>
-    <ISSUCO_CUSTNO value=""/>
-    <KOR_SECN_NM value=""/>
-    <SECN_KACD value=""/>
-    <RGT_RSN_DTAIL_SORT_CD value=""/>
-    <LIST_TPCD value=""/>
-    <START_PAGE value="1"/>
-    <END_PAGE value="15"/>
-    <MENU_NO value="285"/>
-    <CMM_BTN_ABBR_NM value="allview,allview,print,hwp,word,pdf,searchIcon,seach,xls,link,link,wide,wide,top,"/>
-    <W2XPATH value="/IPORTAL/user/company/BIP_CNTS01041V.xml"/>
-</reqParam>
-'''
+    df_list = []
+    for i in range(1, 1000):
+        start_page = 15*(i-1) + 1
+        end_page = 15*i
+        data = f'''
+        <reqParam action="divStatInfoPList" task="ksd.safe.bip.cnts.Company.process.EntrFnafInfoPTask">
+            <RGT_STD_DT_FROM value="{start_date}"/>
+            <RGT_STD_DT_TO value="{end_date}"/>
+            <ISSUCO_CUSTNO value=""/>
+            <KOR_SECN_NM value=""/>
+            <SECN_KACD value=""/>
+            <RGT_RSN_DTAIL_SORT_CD value=""/>
+            <LIST_TPCD value=""/>
+            <START_PAGE value="{start_page}"/>
+            <END_PAGE value="{end_page}"/>
+            <MENU_NO value="285"/>
+            <CMM_BTN_ABBR_NM value="allview,allview,print,hwp,word,pdf,searchIcon,seach,xls,link,link,wide,wide,top,"/>
+            <W2XPATH value="/IPORTAL/user/company/BIP_CNTS01041V.xml"/>
+        </reqParam>
+        '''
 
-response = requests.post(url, headers=headers, data=data, verify=False)
-xml_data = response.text
-root = ET.fromstring(xml_data)
+        st = time()
+        response = requests.post(url, headers=headers, data=data, verify=False)
+        print(f'The page-{i} is processed. Time: {time_format(time() - st)}')
+        xml_data = response.text
+        root = ET.fromstring(xml_data)
 
-df_list = []
-data_list = []
-for data in root.findall('data'):
-    result = data.find('result')
-    data_dict = {}
-    for child in result:
-        data_dict[child.tag] = child.get('value')
-    if len(data_dict) > 0:
-        data_list.append(data_dict)
+        st = time()
+        data_list = []
+        for data in root.findall('data'):
+            result = data.find('result')
+            data_dict = {}
+            for child in result:
+                data_dict[child.tag] = child.get('value')
+            if len(data_dict) > 0:
+                data_list.append(data_dict)
 
-df = pd.DataFrame(data_list)
+        if len(data_list) == 0:
+            break
 
-df_list.append(df)
+        print(f'The data in page-{i} is collected. Time: {time_format(time() - st)}')
+        print('Sleeping for 5 seconds...')
+        sleep(5)
 
-res = pd.concat(df_list)
+        df = pd.DataFrame(data_list)
 
-res.drop_duplicates(['SHOTN_ISIN', 'KOR_SECN_NM'], inplace=True)
+        df_list.append(df)
+
+    res = pd.concat(df_list)
+
+    res.drop_duplicates(['SHOTN_ISIN', 'KOR_SECN_NM'], inplace=True)
+
+    return res
+
+res = get_seibro_stock_dividend()
