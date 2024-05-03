@@ -3,7 +3,83 @@ import pandas as pd
 import xml.etree.ElementTree as ET
 from time import sleep, time
 from utils import time_format
+from code_config import jsondb_dir
 
+
+def get_seibro_etf_creation(
+    start_date = "20240502",
+    end_date = "20240502",
+    page_num = 2,):
+
+    url = 'https://seibro.or.kr/websquare/engine/proworks/callServletService.jsp'
+
+    referer = 'https://seibro.or.kr/websquare/control.jsp?w2xPath=/IPORTAL/user/etf/BIP_CNTS06026V.xml&menuNo=176'
+
+    df_list = []
+    for i in range(1, page_num):
+        start_page = 30*(i-1) + 1
+        end_page = 30*i
+        data = f'''
+        <reqParam action="secnBySetredStatPList" task="ksd.safe.bip.cnts.etf.process.EtfSetredInfoPTask">
+            <MENU_NO value="176"/>
+            <CMM_BTN_ABBR_NM value="allview,allview,print,hwp,word,pdf,searchIcon,seach,xls,searchIcon,seach,xls,link,link,wide,wide,top,"/>
+            <W2XPATH value="/IPORTAL/user/etf/BIP_CNTS06026V.xml"/>
+            <etf_sort_level_cd value=""/>
+            <etf_big_sort_cd value=""/>
+            <mngco_custno value=""/>
+            <fromDt value="{start_date}"/>
+            <toDt value="{end_date}"/>
+            <START_PAGE value="{start_page}"/>
+            <END_PAGE value="{end_page}"/>
+        </reqParam>
+        '''
+
+        headers = {'Referer': referer}
+        response = requests.post(url, headers=headers, data=data, verify=False)
+        xml_data = response.text
+        root = ET.fromstring(xml_data)
+
+        data_list = []
+        for data in root.findall('data'):
+            result = data.find('result')
+            data_dict = {}
+            for child in result:
+                data_dict[child.tag] = child.get('value')
+            if len(data_dict) > 0:
+                data_list.append(data_dict)
+
+        if len(data_list) == 0:
+            break
+        
+        print(f'The data in page-{i} is collected. Sleep for 5 seconds...')
+        sleep(5)
+        
+        df = pd.DataFrame(data_list)
+        df_list.append(df)
+
+    res = pd.concat(df_list)
+    res.drop_duplicates('ISIN', inplace=True)
+
+    res.rename(
+        columns={
+            'SETUP_CU_QTY': '설정',
+            'RP_CU_QTY': '환매',
+        },
+        inplace=True
+    )
+
+    return res
+
+def get_etf_creation(
+        start_date = "20240502",
+        end_date = "20240502",
+        page_num = 2,
+        parameter_date = "20240502",
+        file_name = 'etf_base_data.json',):
+    directory = os.path.join(jsondb_dir, parameter_date)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    
 def get_seibro_etf_dividend(
         start_date = "20240401",
         end_date = "20240631",
@@ -148,4 +224,3 @@ def get_seibro_stock_dividend(
 
     return res
 
-res = get_seibro_stock_dividend()

@@ -1,4 +1,4 @@
-from infomax_base_data import get_etf_info
+from infomax_base_data import get_etf_info, get_security_base_info
 import pandas as pd
 from pykrx.website import krx
 from datetime import datetime
@@ -52,6 +52,56 @@ def get_krx_infomax_combined_etf_info():
 
     return res
 
+def get_infomax_etf_base_data(
+        dt = "20240502",):
+    # - 
+    etf_list = get_security_base_info(dt = dt, type_name = "EF")
+    etf_list['code'] = etf_list['code'].str.zfill(6)
+    codes = etf_list['code'].str.cat(sep = ",")
+    etf_info = get_etf_info(codes)
+    etf_info['code'] = etf_info['code'].str.zfill(6)    
+    etf_info.drop_duplicates('isin', inplace=True)
+    etf_info.rename(
+        columns={
+            "net_asset": "market cap",
+            },
+        inplace=True
+    )
+
+    etf_info['market_cap'] = etf_info['market_cap'].div(100000000.0)
+    etf_info.sort_values(by='market_cap', ascending=False, inplace=True)
+
+    return etf_info
+
+def save_infomax_etf_base_data(
+        retrieval_date = "20240503",
+        parameter_date = "20240502",
+        file_name = 'etf_base_data.json'):
+    directory = os.path.join(jsondb_dir, parameter_date)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    res = get_infomax_etf_base_data(dt = retrieval_date)
+    res.to_json(f'{directory}/{file_name}')
+
+def load_infomax_etf_base_data(
+        wb = None,
+        sheet_name = 'BaseData',
+        parameter_date = "20245202",
+        file_name = 'etf_base_data.json',
+        output_head = 'G3',
+        ):
+    directory = os.path.join(jsondb_dir, parameter_date)
+
+    df = pd.read_json(f'{directory}/{file_name}')
+    if wb is None:
+        wb = xw.Book.caller()
+    
+    df['code'] = df['code'].str.zfill(6)
+    df['company_code'] = df['company_code'].str.zfill(6)
+    
+    ws = wb.sheets[sheet_name]
+    ws.range(output_head).options(pd.DataFrame, index = False).value = df
+
 def save_etf_base_data(
         retrieval_date = "20240421",
         parameter_date = "20240421",
@@ -91,6 +141,7 @@ def load_etf_base_data(
     
 if __name__ == "__main__":
     xw.Book("D:/ProjectsE/marketdata/MarketData.xlsm").set_mock_caller()
+    save_infomax_etf_base_data()
     save_etf_base_data()
     load_etf_base_data()
 

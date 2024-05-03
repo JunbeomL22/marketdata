@@ -54,20 +54,28 @@ Sub LoadList()
     Dim ws As Worksheet
     Dim sheet_name as String
     Dim python_code as String
-    Dim date as String
+    Dim dt as String
     Dim market as String
     Dim type_name as String
     Dim rank as String
+    Dim start_date as String
+    Dim end_date as String
+    Dim investor as String
+    Dim num_code as String
     Dim output_head as String
 
     sheet_name = "List"
     Set ws = ThisWorkbook.Sheets(sheet_name)
 
-    date = ws.Range("C5").Value
+    dt = ws.Range("C5").Value
     market = ws.Range("C6").Value
     type_name = ws.Range("C7").Value
     rank = ws.Range("C8").Value
-    output_head = ws.Range("C9").Value
+    start_date = ws.Range("C9").Value
+    end_date = ws.Range("C10").Value
+    investor = ws.Range("C11").Value
+    num_code = ws.Range("C12").Value
+    output_head = ws.Range("C13").Value
 
 
     If market = "전체" Then
@@ -95,10 +103,14 @@ Sub LoadList()
     python_code = "import infomax_base_data;"
     python_code = python_code & "infomax_base_data.load_list("
     python_code = python_code & "sheet_name='" & sheet_name & "',"
-    python_code = python_code & "date='" & date & "',"
+    python_code = python_code & "date='" & dt & "',"
     python_code = python_code & "market='" & market & "',"
     python_code = python_code & "type_name='" & type_name & "',"
     python_code = python_code & "rank='" & rank & "',"
+    python_code = python_code & "start_date='" & start_date & "',"
+    python_code = python_code & "end_date='" & end_date & "',"
+    python_code = python_code & "investor='" & investor & "',"
+    python_code = python_code & "num_code=" & num_code & ","
     python_code = python_code & "output_head='" & output_head & "')"
 
     RunPython python_code

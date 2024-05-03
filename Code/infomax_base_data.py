@@ -122,6 +122,7 @@ def get_security_base_info(search = "",
                             name = "",
                             isin = "",
                             market = "",
+                            dt = "",
                             type_name = ""):
     
     session = requests.Session()
@@ -134,6 +135,7 @@ def get_security_base_info(search = "",
                 "name": name,
                 "isin": isin,
                 "market": market,
+                "date": dt,
                 "type": type_name}
     
     r = session.get(api_url, params = params, headers = INFOMAX_HEADER)
