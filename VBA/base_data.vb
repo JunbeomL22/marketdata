@@ -18,7 +18,8 @@ Sub LoadETFBaseData()
     ws.Range(output_head).Resize(1000, 30).ClearContents
 
     python_code = "import base_data;"
-    python_code = python_code & "base_data.load_etf_base_data("
+    python_code = python_code & "base_data.load_infomax_etf_base_data("
+    python_code = python_code & "sheet_name='" & sheet_name & "',"
     python_code = python_code & "parameter_date='" & parameter_date & "',"
     python_code = python_code & "file_name='" & file_name & "',"
     python_code = python_code & "output_head='" & output_head & "')"
@@ -42,7 +43,7 @@ Sub SaveETFBaseData()
     file_name = ws.Range("C5").Value
 
     python_code = "import base_data;"
-    python_code = python_code & "base_data.save_etf_base_data("
+    python_code = python_code & "base_data.save_infomax_etf_base_data("
     python_code = python_code & "retrieval_date='" & retrieval_date & "',"
     python_code = python_code & "parameter_date='" & parameter_date & "',"
     python_code = python_code & "file_name='" & file_name & "')"
@@ -62,6 +63,9 @@ Sub LoadList()
     Dim end_date as String
     Dim investor as String
     Dim num_code as String
+    Dim num_page as String
+    Dim base_file_date as String
+    Dim file_name as String
     Dim output_head as String
 
     sheet_name = "List"
@@ -75,8 +79,10 @@ Sub LoadList()
     end_date = ws.Range("C10").Value
     investor = ws.Range("C11").Value
     num_code = ws.Range("C12").Value
-    output_head = ws.Range("C13").Value
-
+    num_page = ws.Range("C13").Value
+    base_file_date = ws.Range("C14").Value
+    file_name = ws.Range("C15").Value
+    output_head = ws.Range("C16").Value
 
     If market = "전체" Then
         market = ""
@@ -111,6 +117,9 @@ Sub LoadList()
     python_code = python_code & "end_date='" & end_date & "',"
     python_code = python_code & "investor='" & investor & "',"
     python_code = python_code & "num_code=" & num_code & ","
+    python_code = python_code & "num_page=" & num_page & ","
+    python_code = python_code & "base_file_date='" & base_file_date & "',"
+    python_code = python_code & "file_name='" & file_name & "',"
     python_code = python_code & "output_head='" & output_head & "')"
 
     RunPython python_code

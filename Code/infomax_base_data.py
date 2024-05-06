@@ -2,6 +2,10 @@ import requests
 import pandas as pd
 from code_config import INFOMAX_HEADER
 import xlwings as xw
+from seibro_data import get_etf_creation
+from custom_progress import printProgressBar
+from utils import time_format
+from time import time
 # - 
 # -
 def get_etf_info(codes):
@@ -239,6 +243,9 @@ def load_list(
         end_date = "20240930",
         investor = "1000,8000",
         num_code = 20,
+        num_page = 2,
+        base_file_date = "20240430",
+        file_name = 'etf_base_data.json',
         output_head = 'G5'):
     
     date = int(date)
@@ -257,7 +264,9 @@ def load_list(
     if num_code > 0:
         codes = res['code'].str.zfill(6).head(num_code).tolist()
         investor_list = []
-        for code in codes:
+        N = len(codes)
+        st = time()
+        for i, code in enumerate(codes):
             try:
                 investor_df = get_investor(
                     code = code,
@@ -265,12 +274,11 @@ def load_list(
                     start_date = start_date,
                     end_date = end_date
                 )
+                if len(investor_df) == 0:
+                    print(f'No data retrieved for {code}')
+                    continue
             except Exception as e:
                 print(f'An error occurred with ticker {code}: {str(e)}')
-
-            if len(investor_df) == 0:
-                print(f'No data retrieved for {code}')
-                continue
 
             investor_df['ask_value'] = investor_df['ask_value'].div(100000.0)
             investor_df['bid_value'] = investor_df['bid_value'].div(100000.0)
@@ -278,8 +286,8 @@ def load_list(
             investor_df = investor_df.groupby('investor')[['ask_value', 'bid_value']].sum().reset_index()
             investor_df.rename(
                 columns = {
-                    'ask_value': f'매도대금',
-                    'bid_value': f'매수대금'
+                    'ask_value': f'매도',
+                    'bid_value': f'매수'
                 },
                 inplace = True
             )
@@ -292,10 +300,32 @@ def load_list(
             
             investor_list.append(pd.DataFrame(investor_df))
 
+            printProgressBar(
+                i + 1, 
+                N, 
+                prefix = 'Progress:',
+                suffix = f'Complete, Elapsed time: {time_format(time() - st)}',
+                length = 20
+            )
+                             
         if len(investor_list) > 0:
             investor_df = pd.concat(investor_list)
             res = res.merge(investor_df, on = 'code', how = 'left')
 
+    seibro_data = get_etf_creation(
+        parameter_date = base_file_date,
+        start_date = start_date,
+        end_date = end_date,
+        page_num = num_page,
+        file_name = file_name,
+    )
+
+    if seibro_data is not None:
+        res = res.merge(
+            seibro_data[['isin', '설정대금', '환매대금']], 
+            on = 'isin', 
+            how = 'left')
+        
     ws.range(output_head).options(pd.DataFrame, index = False).value = res
 
 def get_investor(

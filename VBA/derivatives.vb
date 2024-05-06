@@ -13,9 +13,9 @@ Sub SaveDerivativesBaseData()
     sheet_name = "DerivativesBase"
     Set ws = ThisWorkbook.Sheets(sheet_name)
 
-    parameter_date = Application.WorksheetFunction.Text(ws.Range("G2").Value, "yyyymmdd")
-    start_date = Application.WorksheetFunction.Text(ws.Range("G3").Value, "yyyymmdd")
-    end_date = Application.WorksheetFunction.Text(ws.Range("G4").Value, "yyyymmdd")
+    parameter_date = ws.Range("G2").Value
+    start_date = ws.Range("G3").Value
+    end_date = ws.Range("G4").Value
     if ws.Range("G5").Value = "Y" then
         drop_spread = "True"
     else
@@ -42,13 +42,15 @@ Sub LoadDerivativesBaseData()
     Dim output_head as String
     Dim file_name as String
     Dim python_code as String
+    Dim drop_option as String
 
     sheet_name = "DerivativesBase"
     Set ws = ThisWorkbook.Sheets(sheet_name)
 
-    parameter_date = WorksheetFunction.Text(ws.Range("G2").Value, "yyyymmdd")
+    parameter_date = ws.Range("G2").Value
     file_name = ws.Range("G6").Value
-    output_head = ws.Range("G7").Value
+    drop_option = ws.Range("G7").Value
+    output_head = ws.Range("G8").Value
     'erase the 1000 rows and 30 columns from output_head
     ws.Range(output_head).Resize(5000, 30).ClearContents
 

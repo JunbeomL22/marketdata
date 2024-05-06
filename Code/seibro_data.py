@@ -4,7 +4,7 @@ import xml.etree.ElementTree as ET
 from time import sleep, time
 from utils import time_format
 from code_config import jsondb_dir
-
+import os
 
 def get_seibro_etf_creation(
     start_date = "20240502",
@@ -16,7 +16,7 @@ def get_seibro_etf_creation(
     referer = 'https://seibro.or.kr/websquare/control.jsp?w2xPath=/IPORTAL/user/etf/BIP_CNTS06026V.xml&menuNo=176'
 
     df_list = []
-    for i in range(1, page_num):
+    for i in range(1, page_num + 1):
         start_page = 30*(i-1) + 1
         end_page = 30*i
         data = f'''
@@ -57,6 +57,8 @@ def get_seibro_etf_creation(
         df = pd.DataFrame(data_list)
         df_list.append(df)
 
+    if len(df_list) == 0:
+        return None
     res = pd.concat(df_list)
     res.drop_duplicates('ISIN', inplace=True)
 
@@ -67,18 +69,48 @@ def get_seibro_etf_creation(
         },
         inplace=True
     )
-
+    res['설정'] = res['설정'].str.replace(',', '').str.zfill(1).astype(float)
+    res['환매'] = res['환매'].str.replace(',', '').str.zfill(1).astype(float)
     return res
 
 def get_etf_creation(
-        start_date = "20240502",
-        end_date = "20240502",
+        parameter_date = "20240503",
+        start_date = "20240503",
+        end_date = "20240503",
         page_num = 2,
-        parameter_date = "20240502",
         file_name = 'etf_base_data.json',):
     directory = os.path.join(jsondb_dir, parameter_date)
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+    file_name = os.path.join(directory, file_name)
+    # check the file exsitence
+    if not os.path.exists(os.path.join(directory, file_name)):
+        msg = f'''
+        The file {file_name} does not exist.\n
+        Seibro data does not have nav and creation unit data.
+        The base file must be cached in advance
+        '''
+        raise Exception(msg)
+    
+    base_data = pd.read_json(file_name)
+    seibro_data = get_seibro_etf_creation(
+        start_date = start_date,
+        end_date = end_date,
+        page_num = page_num,)
+    
+    if seibro_data is None:
+        return None
+    
+    seibro_data.rename(
+        columns={
+            'ISIN': 'isin',
+        },
+        inplace=True
+    )
+     
+    seibro_data = seibro_data.merge(base_data, on='isin', how='left')
+    seibro_data['설정대금'] = seibro_data['설정'] * seibro_data['nav'] * seibro_data['creationunit'] / 100000000.
+    seibro_data['환매대금'] = seibro_data['환매'] * seibro_data['nav'] * seibro_data['creationunit'] / 100000000.
+
+    return seibro_data
     
 def get_seibro_etf_dividend(
         start_date = "20240401",

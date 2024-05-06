@@ -63,7 +63,7 @@ def get_infomax_etf_base_data(
     etf_info.drop_duplicates('isin', inplace=True)
     etf_info.rename(
         columns={
-            "net_asset": "market cap",
+            "net_asset": "market_cap",
             },
         inplace=True
     )
@@ -96,8 +96,8 @@ def load_infomax_etf_base_data(
     if wb is None:
         wb = xw.Book.caller()
     
-    df['code'] = df['code'].str.zfill(6)
-    df['company_code'] = df['company_code'].str.zfill(6)
+    df['code'] = df['code'].astype(str).str.zfill(6)
+    df['company_code'] = df['company_code'].astype(str).str.zfill(6)
     
     ws = wb.sheets[sheet_name]
     ws.range(output_head).options(pd.DataFrame, index = False).value = df

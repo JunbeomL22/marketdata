@@ -95,6 +95,7 @@ def load_derivatives_base_data(
         parameter_date = "20240423",
         file_name = "derivatives_base_data.json",
         sheet_name = "DerivativesBase",
+        drop_option = "Y",
         output_head = "F15",
         ):
     if wb is None:
@@ -105,6 +106,9 @@ def load_derivatives_base_data(
         f'{jsondb_dir}/{parameter_date}/{file_name}',
         orient='records'
         )
+
+    if drop_option == "Y":
+        res = res[~res['option_type'].str.contains("옵션")].reset_index(drop=True)
 
     ws.range(output_head).options(pd.DataFrame, index = False).value = res
 
