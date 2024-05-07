@@ -115,7 +115,8 @@ def get_etf_creation(
 def get_seibro_etf_dividend(
         start_date = "20240401",
         end_date = "20240631",
-        dividend_type = "이익분배",):
+        dividend_type = "이익분배",
+        sleep_time = 5,):
     url = 'https://seibro.or.kr/websquare/engine/proworks/callServletService.jsp'
 
     # Set the headers
@@ -172,29 +173,18 @@ def get_seibro_etf_dividend(
         df_list.append(df)
 
         print(f'The data in page-{i} is collected. Time: {time_format(time() - st)}')
-        print('Sleeping for 5 seconds...')
-        sleep(5)
+        print(f'Sleeping for {sleep_time} seconds...')
+        sleep(sleep_time)
 
     res = pd.concat(df_list)
     res.drop_duplicates('ISIN', inplace=True)
-    res.rename(
-        columns={
-            "ISIN": "isin",
-            "KOR_SECN_NM": "name",
-            "RGT_STD_DT": "dividend_date",
-            "TH1_PAY_TERM_BEGIN_DT": "payment_date",
-            "ESTM_STDPRC": "dividend_amount",
-            "RGT_RSN_DTAIL_NM": "dividend_type",
-            },
-        inplace=True
-    )
-    res = res[['isin', 'name', 'dividend_date', 'payment_date', 'dividend_amount', 'dividend_type']]
 
     return res
 
 def get_seibro_stock_dividend(
         start_date = "20240330",
-        end_date = "20240505",):
+        end_date = "20240505",
+        sleep_time = 5,):
     url = 'https://seibro.or.kr/websquare/engine/proworks/callServletService.jsp'
 
     # Set the headers
@@ -243,8 +233,8 @@ def get_seibro_stock_dividend(
             break
 
         print(f'The data in page-{i} is collected. Time: {time_format(time() - st)}')
-        print('Sleeping for 5 seconds...')
-        sleep(5)
+        print(f'Sleeping for {sleep_time} seconds...')
+        sleep(sleep_time)
 
         df = pd.DataFrame(data_list)
 
@@ -256,3 +246,43 @@ def get_seibro_stock_dividend(
 
     return res
 
+
+res = get_seibro_stock_dividend(
+    start_date = "20240301",
+    end_date = "20240505",)
+
+res.rename(
+    columns = {
+        'SHOTN_ISIN': 'code',
+        'KOR_SECN_NM': 'name',
+        'RGT_STD_DT': 'dividend_date',
+        'TH1_PAY_TERM_BEGIN_DT': 'payment_date',
+        'RGT_RSN_DTAIL_SORT_NM': 'dividend_type',
+        'ESTM_STDPRC': 'dividend_amount',
+    },
+    inplace=True
+)
+
+res2 = get_seibro_etf_dividend(
+    start_date = "20240301",
+    end_date = "20240505",)
+
+res2.rename(
+    columns = {
+        'ISIN': 'isin',
+        'KOR_SECN_NM': 'name',
+        'RGT_STD_DT': 'dividend_date',
+        'TH1_PAY_TERM_BEGIN_DT': 'payment_date',
+        'RGT_RSN_DTAIL_NM': 'dividend_type',
+        'ESTM_STDPRC': 'dividend_amount',
+    },
+    inplace = True
+)
+
+stock_div = res[['code', 'name', 'dividend_date', 'payment_date', 'dividend_type', 'dividend_amount']].copy()
+etf_div = res2[['isin', 'name', 'dividend_date', 'payment_date', 'dividend_type', 'dividend_amount']].copy()
+
+stock_div['isin'] = ''
+etf_div['code'] = ''
+
+result = pd.concat([stock_div, etf_div])[['isin', 'code', 'name', 'dividend_date', 'payment_date', 'dividend_type', 'dividend_amount']]
