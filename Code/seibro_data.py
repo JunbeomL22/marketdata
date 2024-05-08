@@ -246,43 +246,55 @@ def get_seibro_stock_dividend(
 
     return res
 
+def get_seibro_dividend(
+        start_date = "20240330",
+        end_date = "20240505",
+        etf_dividend_type = "이익분배",
+        sleep_time = 5,):
 
-res = get_seibro_stock_dividend(
-    start_date = "20240301",
-    end_date = "20240505",)
+    res1 = get_seibro_stock_dividend(
+        start_date = start_date,
+        end_date = end_date,
+        sleep_time = sleep_time,)
 
-res.rename(
-    columns = {
-        'SHOTN_ISIN': 'code',
-        'KOR_SECN_NM': 'name',
-        'RGT_STD_DT': 'dividend_date',
-        'TH1_PAY_TERM_BEGIN_DT': 'payment_date',
-        'RGT_RSN_DTAIL_SORT_NM': 'dividend_type',
-        'ESTM_STDPRC': 'dividend_amount',
-    },
-    inplace=True
-)
+    res1.rename(
+        columns = {
+            'SHOTN_ISIN': 'code',
+            'KOR_SECN_NM': 'name',
+            'RGT_STD_DT': 'dividend_date',
+            'TH1_PAY_TERM_BEGIN_DT': 'payment_date',
+            'RGT_RSN_DTAIL_SORT_NM': 'dividend_type',
+            'ESTM_STDPRC': 'dividend_amount',
+        },
+        inplace=True
+    )
 
-res2 = get_seibro_etf_dividend(
-    start_date = "20240301",
-    end_date = "20240505",)
+    res2 = get_seibro_etf_dividend(
+        start_date = start_date,
+        end_date = end_date,
+        dividend_type = etf_dividend_type,
+        sleep_time = sleep_time,)
 
-res2.rename(
-    columns = {
-        'ISIN': 'isin',
-        'KOR_SECN_NM': 'name',
-        'RGT_STD_DT': 'dividend_date',
-        'TH1_PAY_TERM_BEGIN_DT': 'payment_date',
-        'RGT_RSN_DTAIL_NM': 'dividend_type',
-        'ESTM_STDPRC': 'dividend_amount',
-    },
-    inplace = True
-)
+    res2.rename(
+        columns = {
+            'ISIN': 'isin',
+            'KOR_SECN_NM': 'name',
+            'RGT_STD_DT': 'dividend_date',
+            'TH1_PAY_TERM_BEGIN_DT': 'payment_date',
+            'RGT_RSN_DTAIL_NM': 'dividend_type',
+            'ESTM_STDPRC': 'dividend_amount',
+        },
+        inplace = True
+    )
 
-stock_div = res[['code', 'name', 'dividend_date', 'payment_date', 'dividend_type', 'dividend_amount']].copy()
-etf_div = res2[['isin', 'name', 'dividend_date', 'payment_date', 'dividend_type', 'dividend_amount']].copy()
+    stock_div = res1[['code', 'name', 'dividend_date', 'payment_date', 'dividend_type', 'dividend_amount']].copy()
+    etf_div = res2[['isin', 'name', 'dividend_date', 'payment_date', 'dividend_type', 'dividend_amount']].copy()
 
-stock_div['isin'] = ''
-etf_div['code'] = ''
+    stock_div['isin'] = ''
+    etf_div['code'] = ''
 
-result = pd.concat([stock_div, etf_div])[['isin', 'code', 'name', 'dividend_date', 'payment_date', 'dividend_type', 'dividend_amount']]
+    result = pd.concat([stock_div, etf_div])[['isin', 'code', 'name', 'dividend_date', 'payment_date', 'dividend_type', 'dividend_amount']]
+
+    result = result.reset_index().drop(columns = ['index'])
+
+    return result

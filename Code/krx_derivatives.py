@@ -54,7 +54,7 @@ def get_derivatives_base_data(
             "LSTTRD_DD": "maturity",
             "LST_SETL_DD": "settlement_date",
             "SETLMULT": "unit_notional",
-            "RGHT_TP_NM": "option_type",
+            "RGHT_TP_NM": "derivative_type",
             "EXER_PRC": "exercise_price",
         },
         inplace = True
@@ -70,6 +70,7 @@ def get_derivatives_base_data(
         for k, v in underline_match.items():
             res.loc[mask & (res['name'].str[-6:] == k), ['und_isin']] = v
     
+
     return res
 
 def save_derivatives_base_data(

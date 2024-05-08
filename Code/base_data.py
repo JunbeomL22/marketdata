@@ -102,7 +102,7 @@ def load_infomax_etf_base_data(
     ws = wb.sheets[sheet_name]
     ws.range(output_head).options(pd.DataFrame, index = False).value = df
 
-def save_etf_base_data(
+def save_krx_etf_base_data(
         retrieval_date = "20240421",
         parameter_date = "20240421",
         file_name = 'etf_base_data.json'):
@@ -120,7 +120,7 @@ def save_etf_base_data(
 
     res.to_json(f'{directory}/{file_name}')
 
-def load_etf_base_data(
+def load_krx_etf_base_data(
         wb = None,
         sheet_name = 'BaseData',
         parameter_date = "20240421",

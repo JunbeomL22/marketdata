@@ -9,60 +9,62 @@ def get_underline_match(infomax_data):
     df = infomax_data
 
     def get_result(inp):
-        code, isin, name = inp
+        und_type, code, isin, name = inp
         """
         returns isin, name, and bbg_ticker
         """
-        if name == "유로스톡스50":
-            res = code, "EUxxxxxxxx50", "SX5E", "SX5E Index"
+        if und_type == "L":
+            res = code, isin[3:9], name, isin[3:9] + " KS Equity"
+        elif name == "유로스톡스50":
+            res = code, "SX5E", "SX5E", "SX5E Index"
         elif name == "미국달러":
-            res = code, isin, "USDKRW", "USDKRW Curncy"
+            res = code, "USDKRW", "USDKRW", "USDKRW Curncy"
         elif name == "엔":
-            res = code, isin, "JPYKRW", "JPYKRW Curncy"
+            res = code, "JPYKRW", "JPYKRW", "JPYKRW Curncy"
         elif name == "유로":
-            res = code, isin, "EURKRW", "EURKRW Curncy"
+            res = code, "EURKRW", "EURKRW", "EURKRW Curncy"
         elif name == "위안":
-            res = code, isin, "CNYKRW", "CNYKRW Curncy"
+            res = code, "CNYKRW", "CNYKRW", "CNYKRW Curncy"
         elif name in ["3개월무위험금리", "3개월무위험지표금리"]:
-            res = code, "KRxxxxKOFR3M", "KOFR 3M", "KRFRRATE Index"
+            res = code, "KOFR 3M", "KOFR 3M", "KRFRRATE Index"
         elif name == "변동성지수":
-            res = code, isin, "VKOSPI", "VKOSPI Index"
+            res = code, "VKOSPI", "VKOSPI", "VKOSPI Index"
         elif name == "금":
-            res = code, isin, "GoldKRW", "XAUKRW Curncy"
+            res = code, "GoldKRW", "GoldKRW", "XAUKRW Curncy"
         elif name in ("코스피200", "미니코스피", "미니코스피200", "코스피200 위클리"):
-            res = code, "KRxxxxxxKSP2", "KOSPI2", "KOSPI2 Index"
+            res = code, "KOSPI2", "KOSPI2", "KOSPI2 Index"
         elif name == "코스닥150":
-            res = code, "KRxxxKSDQ150", "KOSDAQ150", "KOSDAQ150 Index"
+            res = code, "KOSDAQ150", "KOSDAQ150", "KOSDAQ150 Index"
         elif name == "KRX300":
-            res = code, "KRxxxxKRX300", "KRX300", "KRX300 Index"
+            res = code, "KRX300", "KRX300", "KRX300 Index"
         elif (isin == "KRD020020GV9") or (name == "코스닥 글로벌 지수"):
-            res = code, isin, "KOSDAQG", "not given"
+            res = code, "KOSDAQG", "KOSDAQG", "not given"
         elif (isin == "KRD020020362") or (name == "코스피200 에너지화학 섹터지수"):
-            res = code, isin, "에너지화확", "KSP2EC Index"
+            res = code, "에너지화확", "에너지화확", "KSP2EC Index"
         elif (isin == "KRD020020370") or (name == "코스피200 정보기술 섹터지수"):
-            res = code, isin, "정보기술", "KSP2IT Index"
+            res = code, "정보기술", "정보기술", "KSP2IT Index"
         elif (isin == "KRD020020388") or (name == "코스피200 금융 섹터지수"):
-            res = code, isin, "금융지수", "KSP2FI Index"
+            res = code, "금융지수", "금융지수", "KSP2FI Index"
         elif (isin == "KRD020020404") or (name == "코스피200 경기소비재 섹터지수"):
-            res = code, isin, "경기소비재", "KSP2CD Index"
+            res = code, "경기소비재", "경기소비재", "KSP2CD Index"
         elif (isin == "KRD020021329") or (name == "코스피 고배당 50"):
-            res = code, isin, "고배당50", "KOSPIHDY Index"
+            res = code, "고배당50", "고배당50", "KOSPIHDY Index"
         elif (isin == "KRD020021311") or (name == "코스피 배당성장 50"):
-            res = code, isin, "배당성장50", "KOSPIGD Index"
+            res = code, "배당성장50", "배당성장50", "KOSPIGD Index"
         elif (isin == "KRD020020339") or (name == "코스피200 건설 섹터지수"):
-            res = code, isin, "건설", "KSP2CM Index"
+            res = code, "건설", "건설", "KSP2CM Index"
         elif (isin == "KRD020020347") or (name == "코스피200 중공업 섹터지수"):
-            res = code, isin, "중공업", "KSP2ST Index"
+            res = code, "중공업", "중공업", "KSP2ST Index"
         elif (isin == "KRD020021397") or (name == "코스피200 헬스케어 섹터지수"):
-            res = code, isin, "헬스케어", "KSP2HC Index"
+            res = code, "헬스케어", "헬스케어", "KSP2HC Index"
         elif (isin == "KRD020020354") or (name == "코스피200 철강소재 섹터지수"):
-            res = code, isin, "철강소재", "KSP2SM Index" 
+            res = code, "철강소재", "철강소재", "KSP2SM Index" 
         elif (isin == "KRD020020396") or (name == "코스피200 생활소비재 섹터지수"):
-            res = code, isin, "생활소비재", "KSP2CS Index"
+            res = code, "생활소비재", "생활소비재", "KSP2CS Index"
         elif (isin == "KRD020021386") or (name == "코스피200 산업재 섹터지수"):
-            res = code, isin, "산업재", "KSP2IN Index"
+            res = code, "산업재", "산업재", "KSP2IN Index"
         elif (isin == "KRD020023085") or (name == "KRX BBIG 지수"):
-            res = code, isin, "BBIG K-뉴딜", "not given"
+            res = code, "BBIG K-뉴딜", "BBIG K-뉴딜", "not given"
         elif (isin == "KRD020023127") or (name == "KRX 2차전지 TOP 10 지수"):
             res = code, isin, "2차전지 TOP 10", "not given"
         elif (isin == "KRD020023119") or (name == "KRX 바이오 TOP 10 지수"):
@@ -82,20 +84,20 @@ def get_underline_match(infomax_data):
 
     res.rename(columns = {
         0: 'krx_und_code',
-        1: 'und_isin',
+        1: 'und_code',
         2: 'und_name',
         3: 'und_bbg'
     }, inplace = True)
     
     new_row1 = pd.DataFrame({
         'krx_und_code': ['04'],
-        'und_isin': ['KRxxxxVKOSPI'],
+        'und_code': ['KOSPI2'],
         'und_name': ['VKOSPI'],
         'und_bbg': ['VKOSPI Index']
     })
     new_row2 = pd.DataFrame({
         'krx_und_code': ['AF'],
-        'und_isin': ['KRxxxxxxKSP2'],
+        'und_code': ['KOSPI2'],
         'und_name': ['KOSPI2'],
         'und_bbg': ['KOSPI2 Index']
     })
