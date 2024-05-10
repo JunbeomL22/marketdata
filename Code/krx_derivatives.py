@@ -3,7 +3,7 @@ from infomax_derivatives import get_fut_info, get_underline_match
 from custom_progress import printProgressBar
 from code_config import jsondb_dir
 import pandas as pd
-from krx_ktbf_underline import get_ktbf_underline
+from krx_open import get_ktbf_underline
 import xlwings as xw
 import os
 from time import sleep

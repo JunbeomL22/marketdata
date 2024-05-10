@@ -5,6 +5,7 @@ from datetime import datetime
 import xlwings  as xw
 import os
 from code_config import jsondb_dir
+import requests
 
 def get_krx_infomax_combined_etf_info():
     krx_base = krx.ETF_전종목기본종목().fetch()
