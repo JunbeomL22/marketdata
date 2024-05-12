@@ -5,7 +5,7 @@ def get_krx_stock_price(
         dt = "20240509",
         type_name = "ALL",):
     """
-    type_name: ALL, STK
+    type_name: ALL, KOSPI, KOSDAQ, KOSDAQG, KONEX
     """
     url = "http://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd"
 
