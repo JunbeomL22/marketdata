@@ -5,6 +5,76 @@ import xlwings as xw
 from code_config import jsondb_dir
 from custom_progress import printProgressBar
 
+def rename_identifier(inp):
+    und_type, code, isin, name = inp
+    """
+    returns isin, name, and bbg_ticker
+    """
+    if und_type == "L":
+        res = code, isin[3:9], name, isin[3:9] + " KS Equity"
+    elif name == "유로스톡스50":
+        res = code, "SX5E", "SX5E", "SX5E Index"
+    elif name == "미국달러":
+        res = code, "USDKRW", "USDKRW", "USDKRW Curncy"
+    elif name == "엔":
+        res = code, "JPYKRW", "JPYKRW", "JPYKRW Curncy"
+    elif name == "유로":
+        res = code, "EURKRW", "EURKRW", "EURKRW Curncy"
+    elif name == "위안":
+        res = code, "CNYKRW", "CNYKRW", "CNYKRW Curncy"
+    elif name in ["3개월무위험금리", "3개월무위험지표금리"]:
+        res = code, "KOFR 3M", "KOFR 3M", "KRFRRATE Index"
+    elif name == "변동성지수":
+        res = code, "VKOSPI", "VKOSPI", "VKOSPI Index"
+    elif name == "금":
+        res = code, "GoldKRW", "GoldKRW", "XAUKRW Curncy"
+    elif name in ("코스피200", "미니코스피", "미니코스피200", "코스피200 위클리"):
+        res = code, "KOSPI2", "KOSPI2", "KOSPI2 Index"
+    elif name == "코스닥150":
+        res = code, "KOSDAQ150", "KOSDAQ150", "KOSDAQ150 Index"
+    elif name in ("KRX300", "KRX 300"):
+        res = code, "KRX300", "KRX300", "KRX300 Index"
+    elif (isin == "KRD020020GV9") or (name == "코스닥 글로벌 지수"):
+        res = code, "KOSDAQG", "KOSDAQG", "not given"
+    elif (isin == "KRD020020362") or (name == "코스피200 에너지화학 섹터지수"):
+        res = code, "KSP2 에너지화확", "KSP2 에너지화확", "KSP2EC Index"
+    elif (isin == "KRD020020370") or (name == "코스피200 정보기술 섹터지수"):
+        res = code, "KSP2 정보기술", "KSP2 정보기술", "KSP2IT Index"
+    elif (isin == "KRD020020388") or (name == "코스피200 금융 섹터지수"):
+        res = code, "KSP2 금융지수", "KSP2 금융지수", "KSP2FI Index"
+    elif (isin == "KRD020020404") or (name == "코스피200 경기소비재 섹터지수"):
+        res = code, "KSP2 경기소비재", "KSP2 경기소비재", "KSP2CD Index"
+    elif (isin == "KRD020021329") or (name == "코스피 고배당 50"):
+        res = code, "KSP 고배당50", "KSP 고배당50", "KOSPIHDY Index"
+    elif (isin == "KRD020021311") or (name == "코스피 배당성장 50"):
+        res = code, "KSP 배당성장50", "KSP 배당성장50", "KOSPIGD Index"
+    elif (isin == "KRD020020339") or (name == "코스피200 건설 섹터지수"):
+        res = code, "KSP2 건설", "KSP2 건설", "KSP2CM Index"
+    elif (isin == "KRD020020347") or (name == "코스피200 중공업 섹터지수"):
+        res = code, "KSP2 중공업", "KSP2 중공업", "KSP2ST Index"
+    elif (isin == "KRD020021397") or (name == "코스피200 헬스케어 섹터지수"):
+        res = code, "KSP2 헬스케어", "KSP2 헬스케어", "KSP2HC Index"
+    elif (isin == "KRD020020354") or (name == "코스피200 철강소재 섹터지수"):
+        res = code, "KSP2 철강소재", "KSP2 철강소재", "KSP2SM Index" 
+    elif (isin == "KRD020020396") or (name == "코스피200 생활소비재 섹터지수"):
+        res = code, "KSP2 생활소비재", "KSP2 생활소비재", "KSP2CS Index"
+    elif (isin == "KRD020021386") or (name == "코스피200 산업재 섹터지수"):
+        res = code, "KSP2 산업재", "KSP2 산업재", "KSP2IN Index"
+    elif (isin == "KRD020023085") or (name == "KRX BBIG 지수"):
+        res = code, "KRX BBIG", "KRX BBIG", "not given"
+    elif (isin == "KRD020023127") or (name == "KRX 2차전지 TOP 10 지수"):
+        res = code, "KRX 2차전지 TOP 10", "KRX 2차전지 TOP 10", "not given"
+    elif (isin == "KRD020023119") or (name == "KRX 바이오 TOP 10 지수"):
+        res = code, "KRX 바이오 TOP 10", "KRX 바이오 TOP 10", "not given"
+    elif (isin == "KR7161510003") or (name == "ARIRANG 고배당주"):
+        res = code, "ARIRANG 고배당주", "ARIRANG 고배당주", "161510 KS Equity"
+    elif "국채" in name:
+        res = code, isin, name, "not used"
+    else:
+        res = code, isin, name, isin[3:9] + " KS Equity"
+    
+    return pd.Series(res)
+
 def get_underline_match(infomax_data):
     df = infomax_data
 

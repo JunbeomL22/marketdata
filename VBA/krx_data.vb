@@ -70,7 +70,7 @@ Public Sub SaveKrxEtfCombinedBase()
     parameter_date = ws.Range("C4").Value
     base_file = ws.Range("C5").Value
     price_file = ws.Range("C6").Value
-    output_file = ws.Range("C9").Value
+    output_file = ws.Range("C11").Value
 
     python_code = "import krx_io;krx_io.save_krx_etf_combined_base("
     python_code = python_code & "parameter_date = '" & parameter_date & "',"
@@ -93,8 +93,8 @@ Public Sub LoadKrxEtfCombinedBase()
     sheet_name = "BaseData"
     Set ws = ThisWorkbook.Sheets(sheet_name)
     parameter_date = ws.Range("C4").Value
-    file_name = ws.Range("C9").Value
-    output_head = ws.Range("C10").Value
+    file_name = ws.Range("C11").Value
+    output_head = ws.Range("C12").Value
 
     ws.Range(output_head & "30:" & output_head & "2000").ClearContents
 
@@ -110,8 +110,9 @@ Public Sub SaveKrxAll()
     Call SaveKrxEtfBase
     Call SaveKrxEtfPrice
     Call SaveKrxStockPrice
+    Call SaveKrxIndexPrice
     Call SaveKrxEtfCombinedBase
-    Call SaveKrxEtfPdf
+    'Call SaveKrxEtfPdf
 End Sub
 
 Public Sub SaveKrxEtfPdf()
@@ -150,7 +151,7 @@ Public Sub SaveKrxEtfPdf()
     RunPython python_code
 End Sub
 
-Sub LoadKrxEtfPdf()
+Public Sub LoadKrxEtfPdf()
     Dim ws as Worksheet
     Dim sheet_name as String
     Dim parameter_date as String
@@ -170,6 +171,52 @@ Sub LoadKrxEtfPdf()
     python_code = python_code & "sheet_name = '" & sheet_name & "',"
     python_code = python_code & "parameter_date = '" & parameter_date & "',"
     python_code = python_code & "pdf_file = '" & pdf_file & "',"
+    python_code = python_code & "output_head = '" & output_head & "')"
+
+    RunPython python_code
+End Sub
+
+Public Sub SaveKrxIndexPrice()
+    Dim ws as Worksheet
+    Dim retrieval_date as String
+    Dim parameter_date as String
+    Dim file_name as String
+    Dim type_name as String
+    Dim python_code as String
+
+    Set ws = ThisWorkbook.Sheets("BaseData")
+    retrieval_date = ws.Range("C3").Value
+    parameter_date = ws.Range("C4").Value
+    file_name = ws.Range("C9").Value
+    type_name = ws.Range("C10").Value
+
+    python_code = "import krx_io;krx_io.save_krx_index_price("
+    python_code = python_code & "retrieval_date = '" & retrieval_date & "',"
+    python_code = python_code & "parameter_date = '" & parameter_date & "',"
+    python_code = python_code & "file_name = '" & file_name & "',"
+    python_code = python_code & "type_name = '" & type_name & "')"
+
+    RunPython python_code
+End Sub
+
+Public Sub LoadKrxIndexName()
+    Dim ws as Worksheet
+    Dim sheet_name as String
+    Dim parameter_date as String
+    Dim file_name as String
+    Dim output_head as String
+    Dim python_code as String
+
+    sheet_name = "Index"
+    Set ws = ThisWorkbook.Sheets(sheet_name)
+    parameter_date = ws.Range("C4").Value
+    file_name = ws.Range("C5").Value
+    output_head = ws.Range("C6").Value
+
+    python_code = "import krx_io;krx_io.load_krx_index_name("
+    python_code = python_code & "sheet_name = '" & sheet_name & "',"
+    python_code = python_code & "parameter_date = '" & parameter_date & "',"
+    python_code = python_code & "file_name = '" & file_name & "',"
     python_code = python_code & "output_head = '" & output_head & "')"
 
     RunPython python_code

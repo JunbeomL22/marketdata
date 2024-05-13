@@ -1,5 +1,6 @@
 import krx_etf
 import krx_stock
+import krx_index
 import os
 from code_config import jsondb_dir
 import pandas as pd
@@ -49,7 +50,7 @@ def save_krx_etf_base(
     res.to_json(f'{directory}/{file_name}')
 
 def save_krx_etf_combined_base(
-        parameter_date = "20240509",
+        parameter_date = "20240510",
         base_file = 'krx_etf_base.json',
         price_file = 'krx_etf_price.json',
         output_file = 'krx_etf_combined_base.json'
@@ -74,8 +75,6 @@ def save_krx_etf_combined_base(
             'ISU_SRT_CD': 'code', 
             'ISU_ABBRV': 'name',
             'LIST_DD': 'list_date',
-            'ETF_OBJ_IDX_NM': 'index',
-            'IDX_CALC_INST_NM1': 'index_agent',
             'ETF_REPLICA_METHD_TP_CD': 'replication_method',
             'IDX_MKT_CLSS_NM': 'market',
             'IDX_ASST_CLSS_NM': 'asset_class',
@@ -84,6 +83,8 @@ def save_krx_etf_combined_base(
             'COM_ABBRV': 'company',
             'CU_QTY': 'creation_unit',
             'ETF_TOT_FEE': 'ter_bp',
+            'ETF_OBJ_IDX_NM': 'index',
+            'IDX_CALC_INST_NM1': 'index_agent',
             'TAX_TP_CD': 'tax',
             'timestamp': 'timestamp',
             }, 
@@ -96,6 +97,7 @@ def save_krx_etf_combined_base(
             'NAV': 'nav',
             'TDD_CLSPRC': 'close',
             'ACC_TRDVAL': 'trading_value',
+            'OBJ_STKPRC_IDX': 'index_close',
             'MKTCAP': 'market_cap',
             },
             inplace = True)
@@ -117,6 +119,7 @@ def save_krx_etf_combined_base(
         'company', 
         'index', 
         'index_agent',
+        'index_close',
         'creation_unit', 
         'ter_bp', 
         'tax', 
@@ -276,6 +279,65 @@ def load_krx_etf_pdf(
     res['code'] = res['code'].astype(str).str.zfill(6)
     ws.range(output_head).options(pd.DataFrame, index = False).value = res
 
+def save_krx_index_price(
+        parameter_date = "20240509",
+        retrieval_date = "20240510",
+        type_name = "ALL",
+        file_name = 'krx_index_price.json',):
+    directory = os.path.join(jsondb_dir, parameter_date)
+    if not os.path.exists(directory): os.makedirs(directory)
+
+    if type_name == "ALL":
+        type_names = ["KRX", "KOSPI", "KOSDAQ", "Sector"]
+        N = 4
+        df_list = []
+        st = time()
+        print("Index crawling...")
+        for i, name in enumerate(type_names):
+            printProgressBar(
+                i + 1, 
+                N, 
+                prefix = 'Progress:', 
+                suffix = f'Complete ({time_format(time() - st)})',
+                length = 20
+                )
+            df = krx_index.get_krx_index_price(dt = parameter_date, type_name = name)
+            df.insert(0, 'retrieval_date', retrieval_date)
+            df.insert(1, 'mktdate', parameter_date)
+
+            df_list.append(df)
+
+        res = pd.concat(df_list, ignore_index = True).reset_index(drop = True)
+    else:
+        res = krx_index.get_krx_index_price(dt = parameter_date, type_name = type_name)
+        res.insert(0, 'retrieval_date', retrieval_date)
+        res.insert(1, 'mktdate', parameter_date)
+    
+    res.drop_duplicates(subset = ['IDX_NM'], inplace = True)
+    res.to_json(f'{directory}/{file_name}')
+        
+def load_krx_index_name(
+        wb = None,
+        sheet_name = 'Index',
+        parameter_date = '20240510',
+        file_name = 'krx_index_price.json',
+        output_head = 'B15',):
+    # - wb: xlwings workbook object
+    if wb is None:
+        wb = xw.Book.caller()
+    ws = wb.sheets[sheet_name]
+
+    directory = os.path.join(jsondb_dir, parameter_date)
+    file_name = f'{directory}/{file_name}'
+    try:
+        res = pd.read_json(file_name)
+    except FileNotFoundError:
+        raise FileNotFoundError(f"File not found: {file_name}")
+    
+    res.rename(columns = {'IDX_NM': 'name'}, inplace = True)
+    ws.range(output_head).options(index = False).value = res['name']
+
 if __name__ == '__main__':
-    xw.Book('D:/Projects/marketdata/MarketData.xlsm').set_mock_caller()
-    save_krx_etf_pdf()
+    #xw.Book('D:/Projects/marketdata/MarketData.xlsm').set_mock_caller()
+    #save_krx_etf_combined_base(parameter_date = "20240510")
+    pass

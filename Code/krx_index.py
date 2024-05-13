@@ -1,7 +1,4 @@
-from pykrx import stock
-from infomax_base_data import get_security_base_info
 import pandas as pd
-import xlwings as xw
 import requests
 
 def get_krx_index_price(
@@ -9,6 +6,9 @@ def get_krx_index_price(
         type_name = "KOSPI",):
     """
     type_name: KRX(01), KOSPI(02), KOSDAQ(03), Sector(04)
+    단위
+     * 수량: 천
+     * 금액: 백만
     """
     if type_name == "KRX":
         idxIndMidclssCd = "01"
