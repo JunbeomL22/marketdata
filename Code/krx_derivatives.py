@@ -8,6 +8,23 @@ import xlwings as xw
 import os
 from time import sleep
 
+def get_krx_derivative_data(
+        end_date_cutoff = '20241230'):
+    ders = krx.future.core.파생상품검색().fetch()
+    class_names = ders.index.tolist()
+
+    worker = krx.future.core.전종목기본정보()
+    df_list = []
+    N = len(class_names)
+    for i, name in enumerate(class_names):
+        df_list.append(worker.fetch(prodId = name))
+        sleep(2)
+        printProgressBar(i, N, prefix = 'Progress:', suffix = 'Complete', length = 20)
+
+    res = pd.concat(df_list)
+    
+    return res
+        
 def get_derivatives_base_data(
     start_date = '20240423',
     end_date = '20240930',
