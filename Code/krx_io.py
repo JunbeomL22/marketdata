@@ -1,14 +1,15 @@
+from code_config import jsondb_dir
+from datetime import datetime
+from custom_progress import printProgressBar
+from time import time, sleep
+from utils import time_format
+from krx_derivatives import get_krx_derivative_data, get_ktbf_underline
 import krx_etf
 import krx_stock
 import krx_index
 import os
-from code_config import jsondb_dir
 import pandas as pd
-from datetime import datetime
-from custom_progress import printProgressBar
-from time import time, sleep
 import xlwings as xw
-from utils import time_format
 
 def save_krx_etf_price(
         parameter_date = "20240509",
@@ -337,7 +338,65 @@ def load_krx_index_name(
     res.rename(columns = {'IDX_NM': 'name'}, inplace = True)
     ws.range(output_head).options(index = False).value = res['name']
 
+def save_krx_derivative_data(
+        parameter_date = "20240510",
+        end_date_cutoff = "20241231",
+        drop_spread = True,
+        sleep_time = 1,
+        file_name = "krx_derivative.json"):
+    res = get_krx_derivative_data(sleep_time = sleep_time)
+    if not os.path.exists(f'{jsondb_dir}/{parameter_date}'):
+        os.makedirs(f'{jsondb_dir}/{parameter_date}')
+
+    res.drop(
+        columns=['ISU_ABBRV', 'ISU_ENG_NM'],
+        inplace=True)
+    
+    if drop_spread:
+        res = res[~res['ISU_SRT_CD'].str.startswith('4')]
+    
+    res.LIST_DD = res.LIST_DD.str.replace('/', '')
+    res.LSTTRD_DD = res.LSTTRD_DD.str.replace('/', '')
+    res.LST_SETL_DD = res.LST_SETL_DD.str.replace('/', '')
+    res = res[res.LSTTRD_DD <= end_date_cutoff]
+
+    res.RGHT_TP_NM = res.RGHT_TP_NM.str.replace('콜옵션', 'Call').replace('풋옵션', 'Put').replace('-', 'Fut')
+
+    res.rename(
+        columns = {
+            "ISU_CD": "isin",
+            "ISU_SRT_CD": "code",
+            "ISU_NM": "name",
+            "LIST_DD": "listing_date",
+            "LSTTRD_DD": "maturity",
+            "LST_SETL_DD": "settlement_date",
+            "SETLMULT": "unit_notional",
+            "RGHT_TP_NM": "derivative_type",
+            "EXER_PRC": "exercise_price",
+            "ULY_TP_NM": "underline_type",
+        },
+        inplace = True
+    )
+
+    res.to_json(f'{jsondb_dir}/{parameter_date}/{file_name}', orient='records')
+
+def save_krx_ktbf_underline(
+        parameter_date = "20240510",
+        file_name = "krx_ktbf_underline.json"):
+    mat_type = ['3년국채', '5년국채', '10년국채', '30년국채']
+    df_list = []
+    for fut_type in mat_type:
+        res = get_ktbf_underline(fut_type = fut_type)
+        df_list.append(pd.DataFrame(res, index=[fut_type]))
+
+    df = pd.concat(df_list)
+    
+    if not os.path.exists(f'{jsondb_dir}/{parameter_date}'):
+        os.makedirs(f'{jsondb_dir}/{parameter_date}')
+
+    df.to_json(f'{jsondb_dir}/{parameter_date}/{file_name}', orient='index')
+
 if __name__ == '__main__':
-    #xw.Book('D:/Projects/marketdata/MarketData.xlsm').set_mock_caller()
-    #save_krx_etf_combined_base(parameter_date = "20240510")
-    pass
+    xw.Book('D:/Projects/marketdata/MarketData.xlsm').set_mock_caller()
+    save_krx_ktbf_underline()
+    
