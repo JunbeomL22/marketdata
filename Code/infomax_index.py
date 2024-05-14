@@ -60,7 +60,6 @@ def get_index_daily(
     }
 
     r = session.get(api_url, params = params, headers = INFOMAX_HEADER)
-
     success, results = r.json().values()
 
     res = None

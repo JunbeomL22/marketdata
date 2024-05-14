@@ -5,6 +5,65 @@ import xlwings as xw
 from code_config import jsondb_dir
 from custom_progress import printProgressBar
 
+def get_fut_underline(
+        type_name = "",
+        name = "",
+        code = ""):
+    session = requests.Session()
+
+    session.verify = False
+    api_url = 'https://infomaxy.einfomax.co.kr/api/future/underline'
+
+    params = {"type": type_name,
+              "name": name,
+              "code": code
+              }
+    
+    r = session.get(api_url, params = params, headers = INFOMAX_HEADER)
+
+    success, results = r.json().values()
+    if success:
+        res = pd.DataFrame(results)
+        return res
+    else:
+        raise Exception(f'infomax future crawling failed\n\
+                        get_fut_underline\n\
+                        {type_name}\n\
+                        {name}\n\
+                        {code}\n\
+                        {api_url}\n\
+                        {params}')
+    
+def get_option_underline(
+        type_name = "",
+        name = "",
+        code = ""):
+    session = requests.Session()
+
+    session.verify = False
+    api_url = 'https://infomaxy.einfomax.co.kr/api/option/underline'
+
+    params = {"type": type_name,
+              "name": name,
+              "code": code
+              }
+    
+    r = session.get(api_url, params = params, headers = INFOMAX_HEADER)
+
+    success, results = r.json().values()
+    if success:
+        res = pd.DataFrame(results)
+        return res
+    else:
+        raise Exception(f'infomax option crawling failed\n\
+                        get_option_underline\n\
+                        {type_name}\n\
+                        {name}\n\
+                        {code}\n\
+                        {api_url}\n\
+                        {params}')
+
+
 def rename_identifier(inp):
     und_type, code, isin, name = inp
     """
@@ -73,58 +132,7 @@ def rename_identifier(inp):
     else:
         res = code, isin, name, isin[3:9] + " KS Equity"
     
-    return pd.Series(res)
-
-def get_underline_match(infomax_data):
-    df = infomax_data
-
-    res = df[['underline_code', 
-              'underline_isin', 
-              'underline']].apply(rename_identifier, axis = 1)
-
-    res.rename(columns = {
-        0: 'krx_und_code',
-        1: 'und_code',
-        2: 'und_name',
-        3: 'und_bbg'
-    }, inplace = True)
-    
-    new_row1 = pd.DataFrame({
-        'krx_und_code': ['04'],
-        'und_code': ['KOSPI2'],
-        'und_name': ['VKOSPI'],
-        'und_bbg': ['VKOSPI Index']
-    })
-    new_row2 = pd.DataFrame({
-        'krx_und_code': ['AF'],
-        'und_code': ['KOSPI2'],
-        'und_name': ['KOSPI2'],
-        'und_bbg': ['KOSPI2 Index']
-    })
-    
-    res = pd.concat([res, new_row1, new_row2])
-
-    res.drop_duplicates(subset = 'krx_und_code', inplace = True)
-
-
-    return res
-
-def get_infomax_underline_identifier():
-    fut = get_fut_info()
-    fut_unds = fut[['underline_type_code', 'underline_code', 'underline_isin', 'underline']]
-    fut_unds = fut_unds.drop_duplicates(subset = 'underline_code')
-    identifiers = fut_unds.apply(rename_identifier, axis = 1)
-
-    identifiers.rename(
-        columns = {
-            0: 'krx_und_code',
-            1: 'und_code',
-            2: 'und_name',
-            3: 'und_bbg'
-        }, 
-        inplace = True)
-    
-    return identifiers
+    return pd.Series([und_type]+list(res))
 
 def get_fut_info(
         kr_name = "",
@@ -162,14 +170,13 @@ def get_fut_info(
     
     return res
 
-
 def get_option_info(
         kr_name = "",
         underline = "",
         maturity = "",
         option = "",
         atm = "", 
-        size = 1000):
+        size = 5000):
     session = requests.Session()
 
     session.verify = False
@@ -201,6 +208,46 @@ def get_option_info(
                         {atm}\n\
                         {api_url}\n\
                         {params}')
+
+    return res
+
+def get_infomax_underline_identifier():
+    fut = get_fut_info()
+    #opt = get_option_info()
+    derivatives = pd.concat([fut], axis = 0)
+    derivatives = derivatives.drop_duplicates(subset = 'underline_code')
+    unds = derivatives[['underline_type_code', 'underline_code', 'underline_isin', 'underline']]
+    unds = unds.drop_duplicates(subset = 'underline_code')
+    identifiers = unds.apply(rename_identifier, axis = 1)
+
+    identifiers.rename(
+        columns = {
+            0: 'und_type',
+            1: 'krx_und_code',
+            2: 'und_code',
+            3: 'und_name',
+            4: 'und_bbg'
+        }, 
+        inplace = True)
+    
+    new_row1 = pd.DataFrame({
+        'und_type': ['F'],
+        'krx_und_code': ['04'],
+        'und_code': ['KOSPI2'],
+        'und_name': ['VKOSPI'],
+        'und_bbg': ['VKOSPI Index']
+    })
+    new_row2 = pd.DataFrame({
+        'und_type': ['F'],
+        'krx_und_code': ['AF'],
+        'und_code': ['KOSPI2'],
+        'und_name': ['KOSPI2'],
+        'und_bbg': ['KOSPI2 Index']
+    })
+    
+    res = pd.concat([identifiers, new_row1, new_row2])
+    res = res.drop_duplicates(subset = 'krx_und_code').reset_index(drop = True)
+    res.sort_values('krx_und_code', inplace = True)
 
     return res
 
@@ -272,26 +319,6 @@ def get_fut_past_info(kr_name = "",
     
     if drop_spread:
         res = res[res['spread_near_isin'] == '']
-
-    return res
-
-def get_fut_underline(type_name = "C",
-                      name = "",
-                      code = ""):
-    session = requests.Session()
-
-    session.verify = False
-    api_url = 'https://infomaxy.einfomax.co.kr/api/future/underline'
-
-    params = {"type": type_name,
-              "name": name,
-              "code": code
-              }
-    
-    r = session.get(api_url, params = params, headers = INFOMAX_HEADER)
-
-    success, results = r.json().values()
-    res = pd.DataFrame(results)
 
     return res
 
@@ -428,7 +455,35 @@ def load_all_connected_future(
 
     ws = wb.sheets[sheet_name]
     ws.range(output_head).options(pd.DataFrame, index = True).value = res
-        
+
+
+def get_infomax_fut_trade_tick(
+        code = "165V6000",
+        dt = "20240514",):
+    session = requests.Session()
+    # SSL 인증 처리 무효화
+    session.verify = False
+    api_url = 'https://infomaxy.einfomax.co.kr/api/future/tick'
+
+    params = {"code": code, "date": dt}
+    
+    r = session.get(api_url, params = params, headers = INFOMAX_HEADER)
+
+    success, results = r.json().values()
+    res = None
+
+    if success:
+        res = pd.DataFrame(results)
+    else:
+        raise Exception(f'infomax future crawling failed\n\
+                        get_infomax_fut_trade_tick\n\
+                        {dt}\n\
+                        {api_url}\n\
+                        {params}')
+    
+    return res
+
+res = get_infomax_fut_trade_tick(dt = "20240514")
 if __name__ == "__main__":
     xw.Book('D:/Projects/marketdata/MarketData.xlsm').set_mock_caller()
     load_option_info()

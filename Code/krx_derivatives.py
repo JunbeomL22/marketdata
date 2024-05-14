@@ -85,7 +85,8 @@ def get_ktbf_underline(
 
     return res
 
-def get_krx_derivative_last_trade_time():
+
+def get_krx_derivatives_last_trade_time():
     res = {
         "채권(Bond)": "11:30:00", # 3년국채
         "금리(Interest Rates)": "15:45:00", # 3개월무위험금리
@@ -93,8 +94,12 @@ def get_krx_derivative_last_trade_time():
         "일반상품(Commodity)": "11:30:00", # 금
         "주권(Equity)": "15:20:00", # 삼성전자
         "지수(Index)": "15:20:00", # 코스피200
-        "글로벌지수(Global Index)": "15:20:00" # 유로스톡스50
+        "글로벌지수(Global Index)": "15:20:00", # 유로스톡스50
     }
 
-    return res
+    df = pd.DataFrame(list(res.items()), columns=['category', 'time'])
+
+    return df
+
+
     

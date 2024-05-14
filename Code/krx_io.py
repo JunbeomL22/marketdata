@@ -4,10 +4,11 @@ from custom_progress import printProgressBar
 from time import time, sleep
 from utils import time_format
 from krx_derivatives import get_krx_derivative_data, get_ktbf_underline
+from krx_derivatives import get_krx_derivative_last_trade_time
+import os
 import krx_etf
 import krx_stock
 import krx_index
-import os
 import pandas as pd
 import xlwings as xw
 
@@ -338,8 +339,9 @@ def load_krx_index_name(
     res.rename(columns = {'IDX_NM': 'name'}, inplace = True)
     ws.range(output_head).options(index = False).value = res['name']
 
-def save_krx_derivative_data(
-        parameter_date = "20240510",
+def save_krx_derivatives_data(
+        parameter_date = "20240513",
+        retrieval_date = "20240514",
         end_date_cutoff = "20241231",
         drop_spread = True,
         sleep_time = 1,
@@ -377,24 +379,38 @@ def save_krx_derivative_data(
         },
         inplace = True
     )
-
+    res.insert(0, 'retrieval_date', retrieval_date)
     res.to_json(f'{jsondb_dir}/{parameter_date}/{file_name}', orient='records')
 
 def save_krx_ktbf_underline(
-        parameter_date = "20240510",
+        parameter_date = "20240513",
+        retrieval_date = "20240514",
         file_name = "krx_ktbf_underline.json"):
-    mat_type = ['3년국채', '5년국채', '10년국채', '30년국채']
+        
     df_list = []
-    for fut_type in mat_type:
-        res = get_ktbf_underline(fut_type = fut_type)
-        df_list.append(pd.DataFrame(res, index=[fut_type]))
+    for mat_type in ["3년국채", "5년국채", "10년국채", "30년국채"]:
+        df = pd.DataFrame(list(get_ktbf_underline(mat_type).items()), columns=['date', 'code'])
+        df.insert(0, 'mat_type', mat_type)
+        df_list.append(df)
 
-    df = pd.concat(df_list)
+        res = pd.concat(df_list)
     
     if not os.path.exists(f'{jsondb_dir}/{parameter_date}'):
         os.makedirs(f'{jsondb_dir}/{parameter_date}')
 
-    df.to_json(f'{jsondb_dir}/{parameter_date}/{file_name}', orient='index')
+    res.insert(0, 'retrieval_date', retrieval_date)
+    res.to_json(f'{jsondb_dir}/{parameter_date}/{file_name}', orient='records')
+
+def save_krx_derivatives_last_trade_time(
+        parameter_date = "20240513",
+        retrieval_date = "20240514",
+        file_name = "krx_derivative_last_trade_time.json"):
+    res = get_krx_derivatives_last_trade_time()
+    if not os.path.exists(f'{jsondb_dir}/{parameter_date}'):
+        os.makedirs(f'{jsondb_dir}/{parameter_date}')
+
+    res.insert(0, 'retrieval_date', retrieval_date)
+    res.to_json(f'{jsondb_dir}/{parameter_date}/{file_name}', orient='records')
 
 if __name__ == '__main__':
     xw.Book('D:/Projects/marketdata/MarketData.xlsm').set_mock_caller()
