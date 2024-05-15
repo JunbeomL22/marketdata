@@ -2,5 +2,8 @@
     "terminal.integrated.env.windows": {
         "PYTHONPATH": "${env:PYTHONPATH};D:/Projects/marketdata/Code"
     },
+    "CodeGPT.apiKey": "OpenAI",
+    "CodeGPT.Autocomplete.enabled": false,
+    "CodeGPT.Autocomplete.provider": "OpenAI - gpt-3.5-turbo-instruct",
     //"python.REPL.enableREPLSmartSend": true,
 }

@@ -233,14 +233,13 @@ Public Sub SaveKrxDerivativesData()
     Dim python_code as String
 
     Set ws = ThisWorkbook.Sheets("Derivatives")
-    parameter_date = ws.Range("H2").Value
-    retrieval_date = ws.Range("H3").Value
-    end_date_cutoff = ws.Range("H4").Value
-    drop_spread = ws.Range("H5").Value
-    sleep_time = ws.Range("H6").Value
-    file_name = ws.Range("H7").Value
+    parameter_date = ws.Range("C2").Value
+    retrieval_date = ws.Range("C3").Value
+    end_date_cutoff = ws.Range("C4").Value
+    sleep_time = ws.Range("C6").Value
+    file_name = ws.Range("C7").Value
 
-    If ws.Range("H5").Value = "Y" Then
+    If ws.Range("C5").Value = "Y" Then
         drop_spread = "True"
     Else
         drop_spread = "False"
@@ -265,9 +264,9 @@ Public Sub SaveKrxKtbfUnderline()
     Dim python_code as String
 
     Set ws = ThisWorkbook.Sheets("Derivatives")
-    parameter_date = ws.Range("H2").Value
-    retrieval_date = ws.Range("H3").Value
-    file_name = ws.Range("H9").Value
+    parameter_date = ws.Range("C2").Value
+    retrieval_date = ws.Range("C3").Value
+    file_name = ws.Range("C8").Value
 
     python_code = "import krx_io;krx_io.save_krx_ktbf_underline("
     python_code = python_code & "parameter_date = '" & parameter_date & "',"
@@ -285,14 +284,85 @@ Public Sub SaveKrxLastTradeTime()
     Dim python_code as String
 
     Set ws = ThisWorkbook.Sheets("Derivatives")
-    parameter_date = ws.Range("H2").Value
-    retrieval_date = ws.Range("H3").Value
-    file_name = ws.Range("H9").Value
+    parameter_date = ws.Range("C2").Value
+    retrieval_date = ws.Range("C3").Value
+    file_name = ws.Range("C9").Value
 
-    python_code = "import krx_io;krx_io.save_krx_last_trade_time("
+    python_code = "import krx_io;krx_io.save_krx_derivatives_last_trade_time("
     python_code = python_code & "parameter_date = '" & parameter_date & "',"
     python_code = python_code & "retrieval_date = '" & retrieval_date & "',"
     python_code = python_code & "file_name = '" & file_name & "')"
+
+    RunPython python_code
+End Sub
+
+Public Sub LoadKrxDerivativesData()
+    Dim ws as Worksheet
+    Dim sheet_name as String
+    Dim parameter_date as String
+    Dim file_name as String
+    Dim output_head as String
+    Dim python_code as String
+
+    sheet_name = "Derivatives"
+    Set ws = ThisWorkbook.Sheets(sheet_name)
+    parameter_date = ws.Range("C2").Value
+    file_name = ws.Range("C7").Value
+    ouput_head = ws.Range("C11").Value
+
+    ws.Range(output_head & "30:" & output_head & "2000").ClearContents
+
+    python_code = "import krx_io;krx_io.load_krx_derivatives_data("
+    python_code = python_code & "sheet_name = '" & sheet_name & "',"
+    python_code = python_code & "parameter_date = '" & parameter_date & "',"
+    python_code = python_code & "file_name = '" & file_name & "',"
+    python_code = python_code & "output_head = '" & output_head & "')"
+
+    RunPython python_code
+End Sub
+
+Public Sub LoadKrxKtbfUnderline()
+    Dim ws as Worksheet
+    Dim sheet_name as String
+    Dim parameter_date as String
+    Dim file_name as String
+    Dim output_head as String
+    Dim python_code as String
+
+    sheet_name = "Derivatives"
+    Set ws = ThisWorkbook.Sheets(sheet_name)
+    parameter_date = ws.Range("C2").Value
+    file_name = ws.Range("C8").Value
+    output_head = ws.Range("C12").Value
+
+    python_code = "import krx_io;krx_io.load_krx_ktbf_underline("
+    python_code = python_code & "sheet_name = '" & sheet_name & "',"
+    python_code = python_code & "parameter_date = '" & parameter_date & "',"
+    python_code = python_code & "file_name = '" & file_name & "',"
+    python_code = python_code & "output_head = '" & output_head & "')"
+
+    RunPython python_code
+End Sub
+
+Public Sub LoadKrxDerivativesLastTime()
+    Dim ws as Worksheet
+    Dim sheet_name as String
+    Dim parameter_date as String
+    Dim file_name as String
+    Dim output_head as String
+    Dim python_code as String
+
+    sheet_name = "Derivatives"
+    Set ws = ThisWorkbook.Sheets(sheet_name)
+    parameter_date = ws.Range("C2").Value
+    file_name = ws.Range("C9").Value
+    output_head = ws.Range("C13").Value
+
+    python_code = "import krx_io;krx_io.load_krx_derivatives_last_trade_time("
+    python_code = python_code & "sheet_name = '" & sheet_name & "',"
+    python_code = python_code & "parameter_date = '" & parameter_date & "',"
+    python_code = python_code & "file_name = '" & file_name & "',"
+    python_code = python_code & "output_head = '" & output_head & "')"
 
     RunPython python_code
 End Sub

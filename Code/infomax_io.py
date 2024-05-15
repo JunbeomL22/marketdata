@@ -9,6 +9,7 @@ def save_infomax_underline_identifier(
         retrieval_date = "20240514",
         file_name = "infomax_underline_identifier.json",
         ):
+    print("Saving infomax_underline_identifier...")
     res = get_infomax_underline_identifier()
     res.insert(0, "parameter_date", parameter_date)
     res.insert(1, "retrieve_date", retrieval_date)
@@ -18,11 +19,12 @@ def save_infomax_underline_identifier(
 
 def load_infomax_underline_identifier(
         wb = None,
-        sheet_name = 'Index',
-        output_head = 'V4',
+        sheet_name = 'Derivatives',
         parameter_date = "20240513",
+        output_head = 'B17',
         file_name = "infomax_underline_identifier.json",
         ):
+    print("Loading infomax_underline_identifier...")
     if wb is None:
         wb = xw.Book.caller()
     ws = wb.sheets[sheet_name]

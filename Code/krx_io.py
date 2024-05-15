@@ -4,7 +4,7 @@ from custom_progress import printProgressBar
 from time import time, sleep
 from utils import time_format
 from krx_derivatives import get_krx_derivative_data, get_ktbf_underline
-from krx_derivatives import get_krx_derivative_last_trade_time
+from krx_derivatives import get_krx_derivatives_last_trade_time
 import os
 import krx_etf
 import krx_stock
@@ -16,6 +16,7 @@ def save_krx_etf_price(
         parameter_date = "20240509",
         retrieval_date = "20240510",
         file_name = 'krx_etf_price.json'):
+    print("saving krx etf price...")
     directory = os.path.join(jsondb_dir, parameter_date)
     if not os.path.exists(directory): os.makedirs(directory)
     
@@ -30,6 +31,7 @@ def save_krx_stock_price(
         retrieval_date = "20240510",
         type_name = "ALL",
         file_name = 'krx_stock_price.json'):
+    print("saving krx stock price...")
     directory = os.path.join(jsondb_dir, parameter_date)
     if not os.path.exists(directory): os.makedirs(directory)
 
@@ -42,6 +44,7 @@ def save_krx_stock_price(
 def save_krx_etf_base(
         parameter_date = "20240509",
         file_name = 'krx_etf_base.json',):
+    print("saving krx etf base...")
     directory = os.path.join(jsondb_dir, parameter_date)
     if not os.path.exists(directory): os.makedirs(directory)
 
@@ -57,6 +60,7 @@ def save_krx_etf_combined_base(
         price_file = 'krx_etf_price.json',
         output_file = 'krx_etf_combined_base.json'
         ):
+    print("saving krx etf combined base...")
     directory = os.path.join(jsondb_dir, parameter_date)
     # check the files exist, otherwise raise an error
     base_file_name = f'{directory}/{base_file}'
@@ -174,6 +178,7 @@ def save_krx_etf_pdf(
         market_type = '국내',
         sleep_time = 0.0):
     # - wb: xlwings workbook object
+    print("saving krx etf pdf...")
     if wb is None:
         wb = xw.Book.caller()
     ws = wb.sheets[sheet_name]
@@ -286,6 +291,7 @@ def save_krx_index_price(
         retrieval_date = "20240510",
         type_name = "ALL",
         file_name = 'krx_index_price.json',):
+    print("saving krx index price...")
     directory = os.path.join(jsondb_dir, parameter_date)
     if not os.path.exists(directory): os.makedirs(directory)
 
@@ -382,11 +388,32 @@ def save_krx_derivatives_data(
     res.insert(0, 'retrieval_date', retrieval_date)
     res.to_json(f'{jsondb_dir}/{parameter_date}/{file_name}', orient='records')
 
+def load_krx_derivatives_data(
+        wb = None,
+        sheet_name = "Derivatives",
+        parameter_date = "20240514",
+        file_name = "krx_derivative.json",
+        output_head = "I18",):
+    print("loading krx derivatives data...")
+    # - wb: xlwings workbook object
+    if wb is None:
+        wb = xw.Book.caller()
+    ws = wb.sheets[sheet_name]
+
+    directory = os.path.join(jsondb_dir, parameter_date)
+    file_name = f'{directory}/{file_name}'
+    try:
+        res = pd.read_json(file_name)
+    except FileNotFoundError:
+        raise FileNotFoundError(f"File not found: {file_name}")
+    
+    ws.range(output_head).options(index = False).value = res
+
 def save_krx_ktbf_underline(
         parameter_date = "20240513",
         retrieval_date = "20240514",
         file_name = "krx_ktbf_underline.json"):
-        
+    print("saving krx ktbf underline...")
     df_list = []
     for mat_type in ["3년국채", "5년국채", "10년국채", "30년국채"]:
         df = pd.DataFrame(list(get_ktbf_underline(mat_type).items()), columns=['date', 'code'])
@@ -401,10 +428,31 @@ def save_krx_ktbf_underline(
     res.insert(0, 'retrieval_date', retrieval_date)
     res.to_json(f'{jsondb_dir}/{parameter_date}/{file_name}', orient='records')
 
+def load_krx_ktbf_underline(
+        wb = None,
+        sheet_name = "Derivatives",
+        parameter_date = "20240513",
+        file_name = "krx_ktbf_underline.json",
+        output_head = "I2",):
+    # - wb: xlwings workbook object
+    if wb is None:
+        wb = xw.Book.caller()
+    ws = wb.sheets[sheet_name]
+
+    directory = os.path.join(jsondb_dir, parameter_date)
+    file_name = f'{directory}/{file_name}'
+    try:
+        res = pd.read_json(file_name)
+    except FileNotFoundError:
+        raise FileNotFoundError(f"File not found: {file_name}")
+    
+    ws.range(output_head).options(index = False).value = res
+
 def save_krx_derivatives_last_trade_time(
         parameter_date = "20240513",
         retrieval_date = "20240514",
-        file_name = "krx_derivative_last_trade_time.json"):
+        file_name = "krx_derivatives_last_trade_time.json"):
+    print("saving krx derivatives last trade time...")
     res = get_krx_derivatives_last_trade_time()
     if not os.path.exists(f'{jsondb_dir}/{parameter_date}'):
         os.makedirs(f'{jsondb_dir}/{parameter_date}')
@@ -412,6 +460,51 @@ def save_krx_derivatives_last_trade_time(
     res.insert(0, 'retrieval_date', retrieval_date)
     res.to_json(f'{jsondb_dir}/{parameter_date}/{file_name}', orient='records')
 
+def load_krx_derivatives_last_trade_time(
+        wb = None,
+        sheet_name = "Derivatives",
+        parameter_date = "20240513",
+        file_name = "krx_derivatives_last_trade_time.json",
+        output_head = "Q2",):
+    # - wb: xlwings workbook object
+    if wb is None:
+        wb = xw.Book.caller()
+    ws = wb.sheets[sheet_name]
+
+    directory = os.path.join(jsondb_dir, parameter_date)
+    file_name = f'{directory}/{file_name}'
+    try:
+        res = pd.read_json(file_name)
+    except FileNotFoundError:
+        raise FileNotFoundError(f"File not found: {file_name}")
+    
+    ws.range(output_head).options(index = False).value = res
+
+def load_krx_etf_bond_isin(
+        parameter_date = "20240514",
+        exclude_list = ['449170', '459580'],
+        file_name = "krx_etf_pdf.json"):
+    directory = os.path.join(jsondb_dir, parameter_date)
+    file_name = f'{directory}/{file_name}'
+    try:
+        res = pd.read_json(file_name)
+    except FileNotFoundError:
+        raise FileNotFoundError(f"File not found: {file_name}")
+    
+    res['etf_code'] = res['etf_code'].astype(str).str.zfill(6)
+    res = res[~res['etf_code'].isin(exclude_list)]
+    res = res[res['SECUGRP_ID'] == 'BN']
+    res = res[['COMPST_ISU_CD2']]
+    res.rename(
+        columns ={
+            'COMPST_ISU_CD2': '코드',
+        },
+        inplace = True)
+    
+    res.drop_duplicates(subset = ['코드'], inplace = True)
+    return res
+
+res = load_krx_etf_bond_isin()
 if __name__ == '__main__':
     xw.Book('D:/Projects/marketdata/MarketData.xlsm').set_mock_caller()
     save_krx_ktbf_underline()
