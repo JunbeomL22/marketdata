@@ -93,7 +93,7 @@ def rename_identifier(inp):
     elif name in ("코스피200", "미니코스피", "미니코스피200", "코스피200 위클리"):
         res = code, "KOSPI2", "KOSPI2", "KOSPI2 Index"
     elif name == "코스닥150":
-        res = code, "KOSDAQ150", "KOSDAQ150", "KOSDAQ150 Index"
+        res = code, "KOSDQ150", "KOSDQ150", "KOSQ150 Index"
     elif name in ("KRX300", "KRX 300"):
         res = code, "KRX300", "KRX300", "KRX300 Index"
     elif (isin == "KRD020020GV9") or (name == "코스닥 글로벌 지수"):

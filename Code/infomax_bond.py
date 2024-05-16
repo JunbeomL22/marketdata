@@ -130,4 +130,3 @@ def load_bond_isin_in_pdf(wb = None,
     ws.range(output_head).value = isins[:,None]
 
 xw.Book("D:/Projects/marketdata/MarketData.xlsm").set_mock_caller()
-load_bond_isin()

@@ -366,3 +366,42 @@ Public Sub LoadKrxDerivativesLastTime()
 
     RunPython python_code
 End Sub
+
+Public Sub SaveAllDerivativesInfo()
+    Call SaveKrxDerivativesData
+    Call SaveKrxKtbfUnderline
+    Call SaveKrxLastTradeTime
+    Call InfomaxData.SaveInfomaxUnderlineIdentifier
+End Sub
+
+Public Sub LoadKrxEtfKtbfBondIsin()
+    Dim ws as Worksheet
+    Dim sheet_name as String
+    Dim parameter_date as String
+    Dim file_name as String
+    Dim exclude_list as String
+    Dum ktbf_und_file as String
+    Dim output_head as String
+    Dim python_code as String
+
+    sheet_name = "BondMaster"
+    Set ws = ThisWorkbook.Sheets(sheet_name)
+    parameter_date = ws.Range("C2").Value
+    file_name = ws.Range("C3").Value
+    exclude_list = ws.Range("C4").Value
+    ktbf_und_file = ws.Range("C5").Value
+    output_head = ws.Range("C6").Value
+
+    python_code = "import krx_io;krx_io.load_krx_etf_ktbf_bond_isin("
+    python_code = python_code & "sheet_name = '" & sheet_name & "',"
+    python_code = python_code & "parameter_date = '" & parameter_date & "',"
+    python_code = python_code & "file_name = '" & file_name & "',"
+    python_code = python_code & "exclude_list = '" & exclude_list & "',"
+    python_code = python_code & "ktbf_und_file = '" & ktbf_und_file & "',"
+    python_code = python_code & "output_head = '" & output_head & "')"
+
+    RunPython python_code
+End Sub
+
+
+

@@ -179,6 +179,8 @@ def save_krx_etf_pdf(
         sleep_time = 0.0):
     # - wb: xlwings workbook object
     print("saving krx etf pdf...")
+    print("sleep time between requests: ", sleep_time)
+    print("minimum market cap: ", min_cap)
     if wb is None:
         wb = xw.Book.caller()
     ws = wb.sheets[sheet_name]
@@ -352,6 +354,7 @@ def save_krx_derivatives_data(
         drop_spread = True,
         sleep_time = 1,
         file_name = "krx_derivative.json"):
+    print("saving krx derivatives data...")
     res = get_krx_derivative_data(sleep_time = sleep_time)
     if not os.path.exists(f'{jsondb_dir}/{parameter_date}'):
         os.makedirs(f'{jsondb_dir}/{parameter_date}')
@@ -480,10 +483,18 @@ def load_krx_derivatives_last_trade_time(
     
     ws.range(output_head).options(index = False).value = res
 
-def load_krx_etf_bond_isin(
+def load_krx_etf_ktbf_bond_isin(
+        wb = None,
+        sheet_name = 'BondMaster',
         parameter_date = "20240514",
-        exclude_list = ['449170', '459580'],
-        file_name = "krx_etf_pdf.json"):
+        file_name = "krx_etf_pdf.json",
+        exclude_list = '449170/459580/455890',
+        ktbf_und_file = "krx_ktbf_underline.json",
+        output_head = 'B25',):
+    # - wb: xlwings workbook object
+    if wb is None:
+        wb = xw.Book.caller()
+    ws = wb.sheets[sheet_name]
     directory = os.path.join(jsondb_dir, parameter_date)
     file_name = f'{directory}/{file_name}'
     try:
@@ -491,21 +502,29 @@ def load_krx_etf_bond_isin(
     except FileNotFoundError:
         raise FileNotFoundError(f"File not found: {file_name}")
     
+    exclude_list = exclude_list.split('/')
     res['etf_code'] = res['etf_code'].astype(str).str.zfill(6)
     res = res[~res['etf_code'].isin(exclude_list)]
-    res = res[res['SECUGRP_ID'] == 'BN']
+    mask1 = res['SECUGRP_ID'] == 'BN'
+    mask2 = res['COMPST_ISU_CD2'].str.startswith('KR6')
+    res = res[mask1 | mask2]
     res = res[['COMPST_ISU_CD2']]
     res.rename(
         columns ={
-            'COMPST_ISU_CD2': '코드',
+            'COMPST_ISU_CD2': 'isin',
         },
         inplace = True)
     
-    res.drop_duplicates(subset = ['코드'], inplace = True)
-    return res
+    ktbf = pd.read_json(f'{jsondb_dir}/{parameter_date}/{ktbf_und_file}', orient='records')
+    ktbf_isins = ','.join(ktbf['code'].tolist()).split(',')
+    ktbf_isin_df = pd.DataFrame(ktbf_isins, columns = ['isin'])
+    
+    res = pd.concat([ktbf_isin_df, res], ignore_index = True)
+    res.drop_duplicates(subset = ['isin'], inplace = True)
+    
+    ws.range(output_head).options(index = False).value = res
 
-res = load_krx_etf_bond_isin()
 if __name__ == '__main__':
     xw.Book('D:/Projects/marketdata/MarketData.xlsm').set_mock_caller()
-    save_krx_ktbf_underline()
+    load_krx_etf_ktbf_bond_isin()
     
