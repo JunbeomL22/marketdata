@@ -1,4 +1,4 @@
-Attribute VB_Name = "BaseData"
+Attribute VB_Name = "Base"
 Option Explicit
 
 Sub LoadInfomaxETFBaseData()

@@ -1,4 +1,4 @@
-Attribute VB_Name = "KrxData"
+Attribute VB_Name = "Krx"
 Option Explicit
 
 Public Sub SaveKrxEtfBase()
@@ -376,14 +376,14 @@ End Sub
 
 
 Public Sub LoadKrxEtfKtbfBondIsin()
-    Dim ws as Worksheet
-    Dim sheet_name as String
-    Dim parameter_date as String
-    Dim file_name as String
-    Dim exclude_list as String
-    Dum ktbf_und_file as String
-    Dim output_head as String
-    Dim python_code as String
+    Dim ws As Worksheet
+    Dim sheet_name As String
+    Dim parameter_date As String
+    Dim file_name As String
+    Dim exclude_list As String
+    Dim ktbf_und_file As String
+    Dim output_head As String
+    Dim python_code As String
 
     sheet_name = "BondMaster"
     Set ws = ThisWorkbook.Sheets(sheet_name)
@@ -403,3 +403,4 @@ Public Sub LoadKrxEtfKtbfBondIsin()
 
     RunPython python_code
 End Sub
+

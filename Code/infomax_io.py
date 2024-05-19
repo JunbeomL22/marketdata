@@ -43,7 +43,22 @@ def load_infomax_underline_identifier(
     res['und_code'] = res[['und_type', 'und_code']].apply(lambda x: attach_zero(x), axis = 1)
     ws.range(output_head).options(pd.DataFrame, index = False).value = res
 
+def save_bbg_tickers_for_dividend(
+        parameter_date = "20240517",
+        deriv_und_file: str = "infomax_underline_identifier.json",
+        output_file_name: str = "bbg_tickers_for_dividend.json",):
+    directory = os.path.join(jsondb_dir, parameter_date)
+    und_iden_file = os.path.join(directory, deriv_und_file)
+    try:
+        und_iden = pd.read_json(und_iden_file)
+    except:
+        raise FileNotFoundError(f"File not found: {und_iden_file}")
+    
+    bbg_und = und_iden[["und_bbg"]].dropna(inplace=False)
+    bbg_und.drop_duplicates(inplace=True)
+    bbg_und.reset_index(drop=True, inplace=True)
+    bbg_und.to_json(os.path.join(directory, output_file_name), orient='records')
+
 if __name__ == "__main__":
     xw.Book("D:/Projects/marketdata/MarketData.xlsm").set_mock_caller()
     load_infomax_underline_identifier()
-    #save_infomax_underline_identifier()

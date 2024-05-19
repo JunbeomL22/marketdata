@@ -64,3 +64,26 @@ Sub LoadDerivativesBaseData()
     
     RunPython python_code
 End Sub
+
+Public Sub SaveBbgTickerForDividend()
+    Dim ws As Worksheet
+    Dim sheet_name As String
+    Dim parameter_date As String
+    Dim deriv_und_file As String
+    Dim output_file_name As String
+    Dim python_code As String
+
+    sheet_name = "Derivatives"
+    Set ws = ThisWorkbook.Sheets(sheet_name)
+
+    parameter_date = ws.Range("C2").Value
+    deriv_und_file = ws.Range("C10").Value
+    output_file_name = ws.Range("C15").Value    
+
+    python_code = "import infomax_io; infomax_io.save_bbg_tickers_for_dividend("
+    python_code = python_code & "parameter_date='" & parameter_date & "',"
+    python_code = python_code & "deriv_und_file='" & deriv_und_file & "',"
+    python_code = python_code & "output_file_name='" & output_file_name & "')"
+
+    RunPython python_code
+End Sub

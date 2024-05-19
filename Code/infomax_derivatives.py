@@ -93,7 +93,7 @@ def rename_identifier(inp):
     elif name in ("코스피200", "미니코스피", "미니코스피200", "코스피200 위클리"):
         res = code, "KOSPI2", "KOSPI2", "KOSPI2 Index"
     elif name == "코스닥150":
-        res = code, "KOSDQ150", "KOSDQ150", "KOSQ150 Index"
+        res = code, "KOSDQ150", "KOSDQ150", "KOSDQ150 Index"
     elif name in ("KRX300", "KRX 300"):
         res = code, "KRX300", "KRX300", "KRX300 Index"
     elif (isin == "KRD020020GV9") or (name == "코스닥 글로벌 지수"):
@@ -459,7 +459,6 @@ def load_all_connected_future(
     ws = wb.sheets[sheet_name]
     ws.range(output_head).options(pd.DataFrame, index = True).value = res
 
-
 def get_infomax_fut_trade_tick(
         code = "165V6000",
         dt = "20240514",):
@@ -486,7 +485,7 @@ def get_infomax_fut_trade_tick(
     
     return res
 
-res = get_infomax_fut_trade_tick(dt = "20240514")
+
 if __name__ == "__main__":
     xw.Book('D:/Projects/marketdata/MarketData.xlsm').set_mock_caller()
     load_option_info()

@@ -1,4 +1,4 @@
-Attribute VB_Name = "SeibroData"
+Attribute VB_Name = "Seibro"
 Option Explicit
 
 Public Sub SaveSeibroDividend()
@@ -14,15 +14,15 @@ Public Sub SaveSeibroDividend()
     Dim python_code As String
 
     sheet_name = "Dividend"
-    set ws = ThisWorkbook.Sheets(sheet_name)
+    Set ws = ThisWorkbook.Sheets(sheet_name)
 
-    parameter_date = ws.range("C4").Value
-    retrieval_date = ws.range("C5").Value
-    start_date = ws.range("C6").Value
-    end_date = ws.range("C7").Value
-    etf_dividend_type = ws.range("C8").Value
-    sleep_time = ws.range("C9").Value
-    file_name = ws.range("C10").Value
+    parameter_date = ws.Range("C4").Value
+    retrieval_date = ws.Range("C5").Value
+    start_date = ws.Range("C6").Value
+    end_date = ws.Range("C7").Value
+    etf_dividend_type = ws.Range("C8").Value
+    sleep_time = ws.Range("C9").Value
+    file_name = ws.Range("C10").Value
 
     python_code = "import seibro_io; seibro_io.save_seibro_dividend("
     python_code = python_code & "parameter_date=" & "'" & parameter_date & "', "
@@ -45,11 +45,11 @@ Public Sub LoadSeibroDividend()
     Dim python_code As String
 
     sheet_name = "Dividend"
-    set ws = ThisWorkbook.Sheets(sheet_name)
+    Set ws = ThisWorkbook.Sheets(sheet_name)
 
-    parameter_date = ws.range("C4").Value
-    file_name = ws.range("C10").Value
-    output_head = ws.range("C11").Value
+    parameter_date = ws.Range("C4").Value
+    file_name = ws.Range("C10").Value
+    output_head = ws.Range("C11").Value
 
     python_code = "import seibro_io; seibro_io.load_seibro_dividend("
     python_code = python_code & "sheet_name=" & "'" & sheet_name & "', "
@@ -59,4 +59,5 @@ Public Sub LoadSeibroDividend()
 
     RunPython python_code
 End Sub
+
 
