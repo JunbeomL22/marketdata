@@ -1,3 +1,5 @@
+import QuantLib as ql
+
 def time_format(t, rounding = 1):
     h = int(t // 3600.0)
     t = t - 3600*h
@@ -10,3 +12,5 @@ def time_format(t, rounding = 1):
     res += f"{round(s, rounding)}s"
 
     return res
+
+custom_sk = ql.SouthKorea()

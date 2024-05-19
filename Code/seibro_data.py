@@ -298,3 +298,4 @@ def get_seibro_dividend(
     result = result.reset_index().drop(columns = ['index'])
 
     return result
+
