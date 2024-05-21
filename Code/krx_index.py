@@ -42,4 +42,3 @@ def get_krx_index_price(
 
     return df
 
-res = get_krx_index_price(type_name = "Sector")

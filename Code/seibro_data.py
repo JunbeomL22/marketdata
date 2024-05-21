@@ -178,7 +178,7 @@ def get_seibro_etf_dividend(
 
     res = pd.concat(df_list)
     res.drop_duplicates('ISIN', inplace=True)
-
+    res['asset_type'] = 'ETF'
     return res
 
 def get_seibro_stock_dividend(
@@ -243,6 +243,8 @@ def get_seibro_stock_dividend(
     res = pd.concat(df_list)
 
     res.drop_duplicates(['SHOTN_ISIN', 'KOR_SECN_NM'], inplace=True)
+
+    res['asset_type'] = 'STK'
 
     return res
 
