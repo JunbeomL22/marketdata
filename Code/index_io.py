@@ -105,7 +105,8 @@ def save_index_weight_from_etf(
     weight = pd.concat(weight_list).reset_index(drop=True)
     weight.to_json(os.path.join(directory, output_file), orient='records')
 
-xw.Book('D:/Projects/marketdata/MarketData.xlsm').set_mock_caller()
-save_index_weight_from_etf()
-res = pd.read_json(os.path.join(jsondb_dir, '20240520', 'index_weight_from_etf.json'), orient='records')
-res['code'] = res['code'].astype(str).str.zfill(6)
+if __name__ == '__main__':
+    xw.Book('D:/Projects/marketdata/MarketData.xlsm').set_mock_caller()
+    save_index_weight_from_etf()
+    res = pd.read_json(os.path.join(jsondb_dir, '20240520', 'index_weight_from_etf.json'), orient='records')
+    res['code'] = res['code'].astype(str).str.zfill(6)
