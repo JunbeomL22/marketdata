@@ -404,3 +404,31 @@ Public Sub LoadKrxEtfKtbfBondIsin()
     RunPython python_code
 End Sub
 
+Public Sub SaveIndexShareFromETF()
+    Dim ws As Worksheet
+    Dim sheet_name As String
+    Dim idx_etf_match_range_name As String
+    Dim parameter_date As String
+    Dim combined_etf_base_file As String
+    Dim etf_pdf_file As String
+    Dim output_file As String
+    Dim python_code As String
+
+    sheet_name = "Index"
+    Set ws = ThisWorkbook.Sheets(sheet_name)
+    idx_etf_match_range_name = "IndexEtfMatch"
+    parameter_date = ws.Range("C4").Value
+    combined_etf_base_file = ws.Range("C7").Value
+    etf_pdf_file = ws.Range("C8").Value
+    output_file = ws.Range("C9").Value
+
+    python_code = "import index_io;index_io.save_index_weight_from_etf("
+    python_code = python_code & "sheet_name = '" & sheet_name & "',"
+    python_code = python_code & "parameter_date = '" & parameter_date & "',"
+    python_code = python_code & "idx_etf_match_range_name = '" & idx_etf_match_range_name & "',"
+    python_code = python_code & "combined_etf_base_file = '" & combined_etf_base_file & "',"
+    python_code = python_code & "etf_pdf_file = '" & etf_pdf_file & "',"
+    python_code = python_code & "output_file = '" & output_file & "')"
+
+    RunPython python_code
+End Sub

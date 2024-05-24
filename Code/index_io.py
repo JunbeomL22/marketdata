@@ -10,11 +10,12 @@ def save_index_weight_from_etf(
         idx_etf_match_range_name = "IndexEtfMatch",
         etf_pdf_file = "krx_etf_pdf.json",
         #
-        stock_price_file = "krx_stock_price.json",
+        #stock_price_file = "krx_stock_price.json",
         combined_etf_base_file = "krx_etf_combined_base.json",
         #
         output_file = "index_weight_from_etf.json",):
     # - 
+    print("saving index weight from etf...")
     if wb is None:
         wb = xw.Book.caller()
     ws = wb.sheets[sheet_name]
@@ -30,6 +31,7 @@ def save_index_weight_from_etf(
     etf_pdf.rename(
         columns={
             'COMPST_ISU_CD': 'code',
+            'COMPST_ISU_CD2': 'isin',
             'SECUGRP_ID': 'market2',
             'COMPST_ISU_CU1_SHRS': 'shares',
             'VALU_AMT': 'value',
@@ -65,7 +67,7 @@ def save_index_weight_from_etf(
             total1 = res1['value'].div(weight_scale).sum()
             ratio1 = idx_price / total1
             weight1 = (res1[['shares']] * ratio1).rename(columns={'shares': 'weight1'})
-            weight1.set_index(res1['code'], inplace=True)
+            weight1.set_index([pd.Index(res1['isin']), pd.Index(res1['code'])], inplace=True)
 
         etf_code2 = etf['etf_code2'].values[0]
         if etf_code2 is not None:
@@ -75,7 +77,7 @@ def save_index_weight_from_etf(
                 total2 = res2['value'].div(weight_scale).sum()
                 ratio2 = idx_price / total2
                 weight2 = (res2[['shares']] * ratio2).rename(columns={'shares': 'weight2'})
-                weight2.set_index(res2['code'], inplace=True)
+                weight2.set_index([pd.Index(res2['isin']), pd.Index(res2['code'])], inplace=True)
 
         if weight2 is None:
             weight = weight1
@@ -91,13 +93,14 @@ def save_index_weight_from_etf(
         weight['weight_scale'] = weight_scale
         return weight.reset_index()
 
-    ids_df = idx_etf_match[['bbg_code', 'und_code', 'name']]
+    ids_df = idx_etf_match[['index_type', 'bbg_code', 'und_code', 'name']]
     weight_list = []
     for idx in ids_df.itertuples():
         idx_name = idx.name
         idx_bbg_code = idx.bbg_code
         idx_und_code = idx.und_code
         df = get_weight(idx_name)
+        df['index_type'] = idx.index_type
         df['bbg_code'] = idx_bbg_code
         df['und_code'] = idx_und_code
         weight_list.append(df)
@@ -107,6 +110,6 @@ def save_index_weight_from_etf(
 
 if __name__ == '__main__':
     xw.Book('D:/Projects/marketdata/MarketData.xlsm').set_mock_caller()
-    save_index_weight_from_etf()
-    res = pd.read_json(os.path.join(jsondb_dir, '20240520', 'index_weight_from_etf.json'), orient='records')
+    save_index_weight_from_etf(parameter_date = '20240523')
+    res = pd.read_json(os.path.join(jsondb_dir, '20240523', 'index_weight_from_etf.json'), orient='records')
     res['code'] = res['code'].astype(str).str.zfill(6)

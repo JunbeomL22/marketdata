@@ -5,9 +5,6 @@ import xlwings as xw
 from code_config import jsondb_dir
 from custom_progress import printProgressBar
 
-
-
-
 def get_fut_underline(
         type_name = "",
         name = "",
@@ -97,7 +94,7 @@ def rename_identifier(inp):
     elif name in ("KRX300", "KRX 300"):
         res = code, "KRX300", "KRX300", "KRX300 Index"
     elif (isin == "KRD020020GV9") or (name == "코스닥 글로벌 지수"):
-        res = code, "KOSDAQG", "KOSDAQG", "not given"
+        res = code, "KOSDAQG", "KOSDAQG", "not given index"
     elif (isin == "KRD020020362") or (name == "코스피200 에너지화학 섹터지수"):
         res = code, "KSP2 에너지화확", "KSP2 에너지화확", "KSP2EC Index"
     elif (isin == "KRD020020370") or (name == "코스피200 정보기술 섹터지수"):
@@ -123,11 +120,11 @@ def rename_identifier(inp):
     elif (isin == "KRD020021386") or (name == "코스피200 산업재 섹터지수"):
         res = code, "KSP2 산업재", "KSP2 산업재", "KSP2IN Index"
     elif (isin == "KRD020023085") or (name == "KRX BBIG 지수"):
-        res = code, "KRX BBIG", "KRX BBIG", "not given"
+        res = code, "KRX BBIG", "KRX BBIG", "not given index"
     elif (isin == "KRD020023127") or (name == "KRX 2차전지 TOP 10 지수"):
-        res = code, "KRX 2차전지 TOP10", "KRX 2차전지 TOP10", "not given"
+        res = code, "KRX 2차전지 TOP10", "KRX 2차전지 TOP10", "not given index"
     elif (isin == "KRD020023119") or (name == "KRX 바이오 TOP 10 지수"):
-        res = code, "KRX 바이오 TOP10", "KRX 바이오 TOP10", "not given"
+        res = code, "KRX 바이오 TOP10", "KRX 바이오 TOP10", "not given index"
     elif (isin == "KR7161510003") or (name == "ARIRANG 고배당주"):
         res = code, "ARIRANG 고배당주", "ARIRANG 고배당주", "161510 KS Equity"
     elif "국채" in name:
