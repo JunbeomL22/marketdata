@@ -307,6 +307,7 @@ def get_seibro_dividend(
 
     def get_ex_date(dt):
         qldt = ql.DateParser.parseFormatted(dt, '%Y%m%d')
+        qldt = cal.adjust(qldt, ql.Preceding)
         ex_date = cal.adjust(qldt - ql.Period('1D'), ql.Preceding)
         ret = ex_date.to_date().strftime('%Y%m%d')
         return ret
