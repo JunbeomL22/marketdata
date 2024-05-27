@@ -1,10 +1,13 @@
 import requests
 import pandas as pd
 import xml.etree.ElementTree as ET
+import os
+import xlwings as xw
+import QuantLib as ql
 from time import sleep, time
 from utils import time_format
 from code_config import jsondb_dir
-import os
+from utils import get_krx_holidays
 
 def get_seibro_etf_creation(
     start_date = "20240502",
@@ -249,6 +252,7 @@ def get_seibro_stock_dividend(
     return res
 
 def get_seibro_dividend(
+        wb = None,
         start_date = "20240330",
         end_date = "20240505",
         etf_dividend_type = "이익분배",
@@ -299,5 +303,15 @@ def get_seibro_dividend(
 
     result = result.reset_index().drop(columns = ['index'])
 
+    cal = get_krx_holidays(wb = wb)
+
+    def get_ex_date(dt):
+        qldt = ql.DateParser.parseFormatted(dt, '%Y%m%d')
+        ex_date = cal.adjust(qldt - ql.Period('1D'), ql.Preceding)
+        ret = ex_date.to_date().strftime('%Y%m%d')
+        return ret
+
+    ex_date = result['dividend_date'].apply(get_ex_date)
+    result.insert(3, 'ex_date', ex_date)
     return result
 

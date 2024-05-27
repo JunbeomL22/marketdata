@@ -1,6 +1,6 @@
 from xbbg.blp import bdp, bdh, bds
 from datetime import datetime
-from code_config import jsondb_dir
+from code_config import jsondb_dir, serverdb_dir
 from custom_progress import printProgressBar
 from utils import time_format
 from time import time
@@ -17,7 +17,7 @@ def save_bbg_div_est(
     dt = datetime.now().strftime("%Y%m%d")
     end_date_override = (datetime.strptime(dt, "%Y%m%d") + pd.DateOffset(years = end_year_offset)).strftime("%Y%m%d")
 
-    directory = os.path.join(jsondb_dir, parameter_date)
+    directory = os.path.join(serverdb_dir, parameter_date)
 
     bbg_codes = pd.read_json(os.path.join(directory, ticker_file), orient = "records")
 
@@ -40,6 +40,8 @@ def save_bbg_div_est(
             'month/year': 'ex_date'}, 
         inplace = True)
 
+    idx_div['payment_date'] = ''
+    print('idnex dividend done')
     # split equity_codes in 10 with custom_progress_bar
     equity_div_list = []
     n_code = len(equity_codes)
@@ -53,7 +55,7 @@ def save_bbg_div_est(
         codes = equity_codes[bg:ed]
         divs = bds(
             tickers = codes,
-            flds = ["BDVD_ALL_PROJECTIONS"])
+            flds = ["BDVD_ALL_PROJ_WITH_PAY_DT"])
         
         if len(divs) > 0:
             equity_div_list.append(divs)
@@ -62,7 +64,7 @@ def save_bbg_div_est(
             ed, n_code, 
             prefix = "Progress:", 
             suffix = f'Complete, Time: {time_format(time() - st)}', 
-            length = 30)
+            length = 20)
 
     equity_div = pd.concat(equity_div_list)
     equity_div.reset_index(inplace = True)
@@ -71,13 +73,24 @@ def save_bbg_div_est(
             'index': 'und_bbg',
             'ex-date': 'ex_date', # 'ex-date' -> 'ex_date
             'amount_per_share': 'div_amt',
-        }
-    )
+            'projected_pay_date': 'payment_date',
+        },
+        inplace = True)
+    equity_div['payment_date'] = pd.to_datetime(equity_div['payment_date'])
+    equity_div['payment_date'] = equity_div['payment_date'].dt.strftime("%Y%m%d")
 
-    res = pd.concat([idx_div[['und_bbg', 'ex-date', 'div_amt']], 
-                    equity_div[['und_bbg', 'ex-date', 'div_amt']]]).reset_index(drop = True)
+    # Python
+    frames = []
+    
+    if not idx_div.empty:
+        frames.append(idx_div[['und_bbg', 'ex-date', 'div_amt']])
+    
+    if not equity_div.empty:
+        frames.append(equity_div[['und_bbg', 'ex-date', 'div_amt']])
+    
+    res = pd.concat(frames).reset_index(drop=True)
 
-    res['ex_date'] = res['ex_date'].dt.strftime("%Y%m%d")
+    res['ex_date'] = pd.to_datetime(res['ex_date']).dt.strftime("%Y%m%d")
 
     res.to_json(os.path.join(directory, output_file), orient = "records")
 

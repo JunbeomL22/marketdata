@@ -3,7 +3,7 @@ import pandas as pd
 import os
 from code_config import jsondb_dir
 
-def save_bond_maseter_excel(
+def save_bond_master_excel(
         wb = None,
         parameter_date = "20240524",
         sheet_name = "BondMaster",
@@ -20,6 +20,8 @@ def save_bond_maseter_excel(
     bnd = sht.range(bond_master_range).value
     bnd = [v for v in bnd if v[0] is not None]
     bnd_df = pd.DataFrame(bnd[1:], columns = bnd[0])
+    bnd_df['issue_date'] = pd.to_datetime(bnd_df['issue_date']).dt.strftime("%Y%m%d")
+    bnd_df['maturity'] = pd.to_datetime(bnd_df['maturity']).dt.strftime("%Y%m%d")
 
     bnd_df = pd.concat([vrt_df, bnd_df])
     # print if there is any duplicated isin
@@ -31,10 +33,10 @@ def save_bond_maseter_excel(
     directory = os.path.join(jsondb_dir, parameter_date)
     if not os.path.exists(directory):
         os.makedirs(directory)
-    
+
     bnd_df.to_json(os.path.join(directory, output_file), orient = "records")
 
 if __name__ == "__main__":
     xw.Book("D:/Projects/marketdata/MarketData.xlsm").set_mock_caller()
-    save_bond_maseter_excel()
+    save_bond_master_excel()
     bnd = pd.read_json(os.path.join(jsondb_dir, "20240524", "bond_master.json"), orient = "records")

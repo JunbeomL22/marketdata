@@ -1,8 +1,8 @@
 import xlwings as xw
 import pandas as pd
 import os
+import re
 from code_config import jsondb_dir
-
 def save_index_weight_from_etf(
         wb = None,
         sheet_name = 'Index',
@@ -107,6 +107,52 @@ def save_index_weight_from_etf(
 
     weight = pd.concat(weight_list).reset_index(drop=True)
     weight.to_json(os.path.join(directory, output_file), orient='records')
+
+def save_weighted_index_div(
+        parameter_date = '20240524',
+        bbg_code_selector = 'not given index',
+        idx_match_file = "index_weight_from_etf.json",
+        bbg_div_file = "bbg_div_est.json",
+        output_file = "weighted_idx_div.json",):
+    parameter_date = '20240524'
+    directory = os.path.join(jsondb_dir, parameter_date)
+    file_name = os.path.join(directory, idx_match_file)
+
+    idx_match = pd.read_json(file_name, orient='records')
+    idx_match['code'] = idx_match['code'].astype(str).str.zfill(6)
+    bbg_divs = pd.read_json(os.path.join(directory, bbg_div_file), orient='records')
+    ids = idx_match[idx_match['bbg_code'] == bbg_code_selector]['und_code'].unique().tolist()
+    
+    def get_und_code(x):
+        isin, code = x
+        res = ''
+        if bool(re.match(r'^KR7', isin)):
+            res = f'{code} KS Equity'
+        else:
+            res = code
+        return res
+        
+    def get_idx_div(idx):
+        idx_weight = idx_match[idx_match['und_code'] == idx]
+        idx_weight['und_bbg_code'] = idx_weight[['isin', 'code']].apply(lambda x: get_und_code(x), axis=1)
+        div = bbg_divs[bbg_divs['und_bbg'].isin(idx_weight['und_bbg_code'])]
+        div = div.merge(idx_weight[['und_bbg_code', 'weight', 'weight_scale']], left_on='und_bbg', right_on='und_bbg_code')
+        div['weighted_div'] = div['div_amt'] * div['weight'] / div['weight_scale']
+        div = div[['ex_date', 'weighted_div']].groupby('ex_date').sum().reset_index()
+        div.insert(0, 'und_code', idx)
+        div['payment_date'] = ''
+        div.rename(columns = {'weighted_div': 'div_amt'}, inplace = True)
+        return div
+
+    div_list = []
+    for idx in ids:
+        div = get_idx_div(idx)
+        if len(div) > 0:
+            div_list.append(div)
+
+    if len(div_list) > 0:
+        res = pd.concat(div_list)
+        res.to_json(os.path.join(directory, output_file), orient='records')
 
 if __name__ == '__main__':
     xw.Book('D:/Projects/marketdata/MarketData.xlsm').set_mock_caller()

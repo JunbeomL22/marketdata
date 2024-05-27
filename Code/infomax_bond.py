@@ -84,3 +84,4 @@ def bond_base_info(stdcd = "",
 
     return res
 
+res = bond_base_info(stdcd = "KR60176729A6")
