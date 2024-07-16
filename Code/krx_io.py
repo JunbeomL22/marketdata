@@ -526,5 +526,6 @@ def load_krx_etf_ktbf_bond_isin(
 
 if __name__ == '__main__':
     xw.Book('D:/Projects/marketdata/MarketData.xlsm').set_mock_caller()
-    load_krx_etf_ktbf_bond_isin()
+    save_krx_etf_base('20240705', 'krx_etf_base.json')
+    #load_krx_etf_ktbf_bond_isin()
     

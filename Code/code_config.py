@@ -9,3 +9,9 @@ jsondb_dir = 'C:/JsonDB/'
 root_dir = 'D:/Projects/marketdata/'
 
 INFOMAX_HEADER = {"Authorization" : f'bearer {infomax_key}'}
+
+
+KRX_HEADER = {
+    "User-Agent": "Mozilla/5.0",
+    "Referer": "http://data.krx.co.kr/"
+    }

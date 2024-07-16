@@ -1,8 +1,7 @@
 import requests
 import pandas as pd
-from custom_progress import printProgressBar
-from time import time, sleep
-from code_config import jsondb_dir
+from code_config import KRX_HEADER
+
 
 def get_krx_etf_price(
         dt = '20240509',):
@@ -18,6 +17,7 @@ def get_krx_etf_price(
     response = requests.post(
         url, 
         verify = False,
+        headers = KRX_HEADER,
         params = params, )
     
     df = pd.DataFrame(response.json()['output'])
@@ -26,7 +26,6 @@ def get_krx_etf_price(
 
 def get_krx_etf_base():
     url = 'http://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd'
-
     params = {
         'bld': 'dbms/MDC/STAT/standard/MDCSTAT04601',
         'locale': 'ko_KR',
@@ -37,9 +36,15 @@ def get_krx_etf_base():
     response = requests.post(
         url,
         verify = False,
+        headers = KRX_HEADER,
         params = params,)
-    
-    df = pd.DataFrame(response.json()['output'])
+        # Check if the response is a valid JSON
+    try:
+        data = response.json()
+    except ValueError:
+        raise ValueError('Invalid response in base info crawling: %s' % response.text)
+
+    df = pd.DataFrame(data['output'])
 
     return df
 
@@ -67,6 +72,7 @@ def get_krx_etf_pdf(
     response = requests.post(
         url,
         verify = False,
+        headers = KRX_HEADER,
         params = params,)
     
     output = response.json()['output']

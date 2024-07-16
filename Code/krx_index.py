@@ -1,5 +1,6 @@
 import pandas as pd
 import requests
+from code_config import KRX_HEADER
 
 def get_krx_index_price(
         dt = "20240509",
@@ -34,6 +35,7 @@ def get_krx_index_price(
         url, 
         verify=False,
         params = params,
+        headers = KRX_HEADER,
         )
     
     data = res.json()

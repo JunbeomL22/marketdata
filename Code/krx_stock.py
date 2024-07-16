@@ -1,5 +1,6 @@
 import requests
 import pandas as pd
+from code_config import KRX_HEADER
 
 def get_krx_stock_price(
         dt = "20240509",
@@ -52,6 +53,7 @@ def get_krx_stock_price(
         url, 
         verify=False,
         data = params,
+        headers = KRX_HEADER,
         )
     
     data = res.json()
