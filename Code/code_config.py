@@ -15,3 +15,8 @@ KRX_HEADER = {
     "User-Agent": "Mozilla/5.0",
     "Referer": "http://data.krx.co.kr/"
     }
+
+KRX_ISIN_HEADER = {
+    "User-Agent": "Mozilla/5.0",
+    "Referer": "https://isin.krx.co.kr/srch/srch.do?method=srchList"
+    }

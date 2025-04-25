@@ -84,4 +84,30 @@ def bond_base_info(stdcd = "",
 
     return res
 
-res = bond_base_info(stdcd = "KR60176729A6")
+def listed_gov_bond_daily_info(
+        stdcd = "",
+        bonddate = "",):
+    session = requests.Session()
+
+    session.verify = False
+    api_url = 'https://infomaxy.einfomax.co.kr/api/bond/market/gov_hist'
+
+    params = {"stdcd": stdcd, "bonddate": bonddate}
+    
+    r = session.get(api_url, params = params, headers = INFOMAX_HEADER)
+
+    success, results = r.json().values()
+
+    res = None
+
+    if success:
+        res = pd.DataFrame(results)
+    else:
+        raise Exception("listed_gov_bond_daily_info() failed")
+
+    return res
+
+res = listed_gov_bond_daily_info(bonddate="20241210")
+isin_codes = res["stdcd"].unique()
+from infomax_base_data import get_bond_info
+info = get_bond_info(isin_codes)
