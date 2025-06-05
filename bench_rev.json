@@ -1,433 +1,447 @@
 [
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR103502GDC6",
         "start":"20231210",
         "end":"20240610",
         "bench_id":"KTB_10YR_BENCH"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR103502GE63",
         "start":"20240610",
         "end":"20241210",
         "bench_id":"KTB_10YR_BENCH"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR103502GEC4",
         "start":"20241210",
+        "end":"20250610",
+        "bench_id":"KTB_10YR_BENCH"
+    },
+    {
+        "date":20250605,
+        "isin":"KR103502GF62",
+        "start":"20250610",
         "end":null,
         "bench_id":"KTB_10YR_BENCH"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR103503GE62",
         "start":"20240610",
         "end":null,
         "bench_id":"KTB_10YR_INFLATION_BENCH"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR103504GD96",
         "start":"20230910",
         "end":"20240910",
         "bench_id":"KTB_20YR_BENCH"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR103504GE95",
         "start":"20240910",
         "end":null,
         "bench_id":"KTB_20YR_BENCH"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR103503GD97",
         "start":"20230910",
         "end":"20240310",
         "bench_id":"KTB_2YR_BENCH"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR103503GE39",
         "start":"20240310",
         "end":"20240910",
         "bench_id":"KTB_2YR_BENCH"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR103503GE96",
         "start":"20240910",
         "end":"20250310",
         "bench_id":"KTB_2YR_BENCH"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR103501GF30",
         "start":"20250310",
         "end":null,
         "bench_id":"KTB_2YR_BENCH"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR103502GD98",
         "start":"20230910",
         "end":"20240310",
         "bench_id":"KTB_30YR_BENCH"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR103502GE30",
         "start":"20240310",
         "end":"20240910",
         "bench_id":"KTB_30YR_BENCH"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR103502GE97",
         "start":"20240910",
         "end":"20250310",
         "bench_id":"KTB_30YR_BENCH"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR103502GF39",
         "start":"20250310",
         "end":null,
         "bench_id":"KTB_30YR_BENCH"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR103501GDC8",
         "start":"20231210",
         "end":"20240610",
         "bench_id":"KTB_3YR_BENCH"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR103501GE64",
         "start":"20240610",
         "end":"20241210",
         "bench_id":"KTB_3YR_BENCH"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR103501GEC6",
         "start":"20241210",
+        "end":"20250610",
+        "bench_id":"KTB_3YR_BENCH"
+    },
+    {
+        "date":20250605,
+        "isin":"KR103501GF63",
+        "start":"20250610",
         "end":null,
         "bench_id":"KTB_3YR_BENCH"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR103505GE94",
         "start":"20240910",
         "end":null,
         "bench_id":"KTB_50YR_BENCH"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR103501GD99",
         "start":"20230910",
         "end":"20240310",
         "bench_id":"KTB_5YR_BENCH"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR103501GE31",
         "start":"20240310",
         "end":"20240910",
         "bench_id":"KTB_5YR_BENCH"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR103501GE98",
         "start":"20240910",
         "end":"20250310",
         "bench_id":"KTB_5YR_BENCH"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR103503GF38",
         "start":"20250310",
         "end":null,
         "bench_id":"KTB_5YR_BENCH"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4167VC0005",
         "start":null,
         "end":"20241217",
         "bench_id":"KTBF_10YR"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4167W30004",
         "start":"20241217",
         "end":"20250318",
         "bench_id":"KTBF_10YR"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4167W60001",
         "start":"20250318",
         "end":"20250617",
         "bench_id":"KTBF_10YR"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4167W90008",
         "start":"20250617",
         "end":"20250916",
         "bench_id":"KTBF_10YR"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4170V90004",
         "start":null,
         "end":"20240913",
         "bench_id":"KTBF_30YR"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4170VC0000",
         "start":"20240913",
         "end":"20241217",
         "bench_id":"KTBF_30YR"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4170W30008",
         "start":"20241217",
         "end":"20250318",
         "bench_id":"KTBF_30YR"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4170W60005",
         "start":"20250318",
         "end":"20250617",
         "bench_id":"KTBF_30YR"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4170W90002",
         "start":"20250617",
         "end":"20250916",
         "bench_id":"KTBF_30YR"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4165VC0007",
         "start":null,
         "end":"20241217",
         "bench_id":"KTBF_3YR"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4165W30008",
         "start":"20241217",
         "end":"20250318",
         "bench_id":"KTBF_3YR"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4165W60005",
         "start":"20250318",
         "end":"20250617",
         "bench_id":"KTBF_3YR"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4165W90002",
         "start":"20250617",
         "end":"20250916",
         "bench_id":"KTBF_3YR"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4166VC0006",
         "start":null,
         "end":"20241217",
         "bench_id":"KTBF_5YR"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4166W30006",
         "start":"20241217",
         "end":"20250318",
         "bench_id":"KTBF_5YR"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4166W60003",
         "start":"20250318",
         "end":"20250617",
         "bench_id":"KTBF_5YR"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4166W90000",
         "start":"20250617",
         "end":"20250916",
         "bench_id":"KTBF_5YR"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4175V10001",
         "start":null,
         "end":"20240115",
         "bench_id":"USDKRW_FUT"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4175V20000",
         "start":"20240115",
         "end":"20240219",
         "bench_id":"USDKRW_FUT"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4175V40008",
         "start":"20240219",
         "end":"20240415",
         "bench_id":"USDKRW_FUT"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4175V50007",
         "start":"20240415",
         "end":"20240520",
         "bench_id":"USDKRW_FUT"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4175V60006",
         "start":"20240520",
         "end":"20240617",
         "bench_id":"USDKRW_FUT"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4175V70005",
         "start":"20240617",
         "end":"20240715",
         "bench_id":"USDKRW_FUT"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4175V80004",
         "start":"20240715",
         "end":"20240819",
         "bench_id":"USDKRW_FUT"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4175V90003",
         "start":"20240819",
         "end":"20240913",
         "bench_id":"USDKRW_FUT"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4175VA0007",
         "start":"20240913",
         "end":"20241021",
         "bench_id":"USDKRW_FUT"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4175VB0006",
         "start":"20241021",
         "end":"20241118",
         "bench_id":"USDKRW_FUT"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4175VC0005",
         "start":"20241118",
         "end":"20241216",
         "bench_id":"USDKRW_FUT"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4175W10009",
         "start":"20241216",
         "end":"20250120",
         "bench_id":"USDKRW_FUT"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4175W20008",
         "start":"20250120",
         "end":"20250217",
         "bench_id":"USDKRW_FUT"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4175W30007",
         "start":"20250217",
         "end":"20250317",
         "bench_id":"USDKRW_FUT"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4175W40006",
         "start":"20250317",
         "end":"20250421",
         "bench_id":"USDKRW_FUT"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4175W50005",
         "start":"20250421",
         "end":"20250519",
         "bench_id":"USDKRW_FUT"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4175W60004",
         "start":"20250519",
         "end":"20250616",
         "bench_id":"USDKRW_FUT"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4175W70003",
         "start":"20250616",
         "end":"20250721",
         "bench_id":"USDKRW_FUT"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4175W80002",
         "start":"20250721",
         "end":"20250818",
         "bench_id":"USDKRW_FUT"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4175W90001",
         "start":"20250818",
         "end":"20250915",
         "bench_id":"USDKRW_FUT"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4175WA0006",
         "start":"20250915",
         "end":"20251020",
         "bench_id":"USDKRW_FUT"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4175WB0005",
         "start":"20251020",
         "end":"20251117",
         "bench_id":"USDKRW_FUT"
     },
     {
-        "date":20250507,
+        "date":20250605,
         "isin":"KR4175WC0004",
         "start":"20251117",
         "end":"20251215",

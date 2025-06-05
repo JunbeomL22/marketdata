@@ -42,11 +42,11 @@ def save_bench_json():
     res['start'] = res['start'].apply(lambda x: x if x in (pd.NaT, None) or pd.isna(x) else str(int(x)))
     res['end'] = res['end'].apply(lambda x: x if x in (pd.NaT, None) or pd.isna(x) else str(int(x)))
 
-    #res['start'] = res['start'].astype(str)
-    #res['end'] = res['end'].astype(str)
+    # Remove duplicate isin
+    res = res.drop_duplicates(subset='isin', keep='first')
+
     res.to_json('D:/Projects/marketdata/bench_rev.json', orient='records', date_format='iso', indent=4, force_ascii=False)
 
 if __name__ == "__main__":
     xw.Book('D:/Projects/marketdata/MarketData.xlsm').set_mock_caller()
     save_bench_json()
-    
